@@ -1,0 +1,64 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://player/player.gd" type="Script" id=1]
+[ext_resource path="res://player/spring_arm.gd" type="Script" id=2]
+[ext_resource path="res://icon.png" type="Texture" id=3]
+
+[sub_resource type="CylinderShape" id=3]
+height = 1.5
+radius = 0.5
+
+[sub_resource type="SpatialMaterial" id=2]
+albedo_color = Color( 1, 1, 0, 1 )
+albedo_texture = ExtResource( 3 )
+
+[sub_resource type="CylinderShape" id=1]
+height = 1.0
+radius = 0.3
+
+[node name="Player" type="KinematicBody"]
+collision_layer = 2
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="Collider" type="CollisionShape" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0 )
+shape = SubResource( 3 )
+
+[node name="CameraHolder" type="SpringArm" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 0 )
+spring_length = 7.0
+margin = 0.2
+script = ExtResource( 2 )
+
+[node name="Camera" type="Camera" parent="CameraHolder"]
+current = true
+
+[node name="Model" type="CSGCylinder" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0 )
+radius = 0.5
+height = 1.5
+sides = 16
+smooth_faces = false
+material = SubResource( 2 )
+
+[node name="JumpBuffer" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true
+
+[node name="CoyoteTime" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true
+
+[node name="Damage" type="Area" parent="."]
+collision_layer = 2
+collision_mask = 24
+
+[node name="Collider" type="CollisionShape" parent="Damage"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0 )
+shape = SubResource( 1 )
+
+[connection signal="timeout" from="JumpBuffer" to="." method="_on_buffer_timeout"]
+[connection signal="timeout" from="CoyoteTime" to="." method="_on_coyote_timeout"]
