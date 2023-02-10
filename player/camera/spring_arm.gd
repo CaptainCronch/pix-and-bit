@@ -2,9 +2,13 @@ extends SpringArm
 
 export var mouse_sensitivity = 0.1
 export var zoom_sensitivity = 1
-export var min_zoom = 2
-export var max_zoom = 10
+export var min_zoom = 3
+export var max_zoom = 7
 
+export var max_offset := 3.5
+export var min_offset := 2
+
+onready var player = $".."
 
 
 func _ready():
@@ -27,4 +31,10 @@ func _process(delta):
 	if Input.is_action_just_released("zoom_in"): zoom_dir += 1
 	if Input.is_action_just_released("zoom_out"): zoom_dir -= 1
 	
-	spring_length = clamp(spring_length + (zoom_dir * zoom_sensitivity), min_zoom, max_zoom)
+	spring_length = clamp(spring_length + (zoom_dir * zoom_sensitivity),
+			min_zoom, max_zoom)
+	
+	# the camera offset is always proportional to the zoom
+	player.camera_offset.y = lerp(min_offset, max_offset,
+			inverse_lerp(min_zoom, max_zoom, spring_length))
+	

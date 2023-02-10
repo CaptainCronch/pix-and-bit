@@ -1,9 +1,10 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=8 format=2]
 
-[ext_resource path="res://player/player.tscn" type="PackedScene" id=1]
+[ext_resource path="res://player/player/player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://icon.png" type="Texture" id=2]
 [ext_resource path="res://default_env.tres" type="Environment" id=3]
 [ext_resource path="res://enemy/enemy.tscn" type="PackedScene" id=4]
+[ext_resource path="res://player/player/weapons/frisbee/frisbee.tscn" type="PackedScene" id=5]
 
 [sub_resource type="SpatialMaterial" id=1]
 albedo_texture = ExtResource( 2 )
@@ -22,23 +23,12 @@ transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 10.7
 shadow_enabled = true
 
 [node name="Player" parent="." instance=ExtResource( 1 )]
-move_speed = 13.0
-jump_force = 26.0
-fall_gravity = 80.0
-hold_gravity = 70.0
-hold_range = 10.0
-max_fall_speed = -75.0
-air_acceleration = 0.05
-air_friction = 0.1
-turn_acceleration = 0.1
-buffer_time = 0.1
-coyote_time = 0.2
-snap_distance = Vector3( 0, 0.2, 0 )
 
 [node name="Ground" type="CSGBox" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0 )
 use_collision = true
 width = 50.0
-height = 0.1
+height = 0.5
 depth = 50.0
 material = SubResource( 1 )
 
@@ -104,3 +94,6 @@ material = SubResource( 2 )
 
 [node name="Enemy" parent="." instance=ExtResource( 4 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0, 6 )
+
+[node name="Frisbee" parent="." instance=ExtResource( 5 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6, -2 )
