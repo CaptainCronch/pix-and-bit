@@ -1,6 +1,7 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://player/player/weapons/frisbee/frisbee.gd" type="Script" id=1]
+[ext_resource path="res://icon.png" type="Texture" id=2]
 
 [sub_resource type="SphereShape" id=3]
 radius = 0.3
@@ -11,6 +12,7 @@ radius = 0.5
 
 [sub_resource type="SpatialMaterial" id=2]
 albedo_color = Color( 1, 0, 1, 1 )
+albedo_texture = ExtResource( 2 )
 
 [sub_resource type="SphereShape" id=4]
 radius = 0.6
@@ -19,6 +21,7 @@ radius = 0.6
 collision_layer = 4
 collision_mask = 21
 mass = 0.5
+gravity_scale = 0.8
 continuous_cd = true
 contacts_reported = 3
 contact_monitor = true
@@ -35,7 +38,7 @@ shape = SubResource( 3 )
 shape = SubResource( 5 )
 disabled = true
 
-[node name="CSGCylinder" type="CSGCylinder" parent="."]
+[node name="Model" type="CSGCylinder" parent="."]
 radius = 0.5
 height = 0.1
 sides = 16

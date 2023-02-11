@@ -23,7 +23,8 @@ export var base_health := 5
 
 export var camera_offset := Vector3.ZERO
 export var camera_frisbee_max := Vector3(0, 0, -20)
-export var camera_frisbee_min := Vector3(0, 0, -2)
+export var camera_frisbee_min := Vector3(0, 0, -4)
+export var frisbee_hold_time := 0.3
 
 
 var _velocity := Vector3.ZERO
@@ -33,18 +34,28 @@ var _grounded := false
 var _gravity := base_gravity
 var _acceleration := base_acceleration
 var _friction := base_friction
-var _health := base_health
-var _frisbee_limit_direction := Vector3.ZERO
 
-onready var _spring_arm : SpringArm = $CameraHolder
-onready var _camera : Camera = $CameraHolder/Camera
+var _health := base_health
+
+var _frisbee_limit_direction := Vector3.ZERO
+var _holding_frisbee := false
+var _hold_angle := Vector2.ZERO
+var _shoot_direction := Vector3.ZERO
+var _ignore_distance := 15
+
+
 onready var _model : CSGCylinder = $Model
+onready var _spring_arm : SpringArm = $SpringArm
+onready var _camera : Camera = $SpringArm/CameraHolder/Camera
 onready var _buffer_timer : Timer = $JumpBuffer
 onready var _coyote_timer : Timer = $CoyoteTime
+
 onready var _head : Position3D = $Head
-onready var _frisbee_ray : RayCast = $CameraHolder/Camera/RayCast
-onready var _end : Position3D = $CameraHolder/Camera/RayCast/End
-onready var _start : Position3D = $CameraHolder/Camera/RayCast/Start
+onready var _frisbee_ray : RayCast = $SpringArm/CameraHolder/Camera/RayCast
+onready var _end : Position3D = $SpringArm/CameraHolder/Camera/RayCast/End
+onready var _start : Position3D = $SpringArm/CameraHolder/Camera/RayCast/Start
+onready var _hold_timer : Timer = $HoldTimer
+
 
 var frisbee := preload("res://player/player/weapons/frisbee/frisbee.tscn")
 
@@ -62,7 +73,7 @@ func _process(delta):
 			_end.global_translation)
 	
 	if Input.is_action_just_pressed("menu"):
-		get_tree().quit() # temporary
+		get_tree().quit() # temporary for testing
 
 
 func _physics_process(delta):
@@ -80,10 +91,33 @@ func get_input():
 	_move_dir = _move_dir.rotated(Vector3.UP, _spring_arm.rotation.y).normalized()
 	
 	if Input.is_action_just_pressed("action"):
+		hold_frisbee()
+	if Input.is_action_just_released("action"):
 		shoot_frisbee()
 
 
+func hold_frisbee():
+	_hold_timer.start(frisbee_hold_time)
+	
+	_hold_angle = Vector2(_spring_arm.rotation.x, _spring_arm.rotation.z)
+	_shoot_direction = _frisbee_limit_direction # if too far pretend only max away
+	
+	if not _frisbee_ray.is_colliding(): return
+	
+	if _head.global_translation.distance_to(_frisbee_ray.get_collision_point()) >= (camera_frisbee_min.z):
+		_shoot_direction = _head.global_translation.direction_to(
+				_frisbee_ray.get_collision_point()) # aim towards where crosshair hits surface
+	else:
+		_shoot_direction = _head.global_translation.direction_to(
+				_start.global_translation) # if too close pretend only min away
+
+
 func shoot_frisbee():
+	var spring_rotation = Vector2(_spring_arm.rotation.x, _spring_arm.rotation.z)
+	
+	if (_hold_angle.distance_to(spring_rotation) >= _ignore_distance): # ignore short swings
+		var shoot_angle :=_hold_angle.direction_to(spring_rotation).angle()
+	
 	var new_frisbee = frisbee.instance()
 	
 	get_tree().get_root().get_child(
@@ -92,17 +126,8 @@ func shoot_frisbee():
 	
 	new_frisbee.global_translation = _head.global_translation
 	
-	var shoot_direction := _frisbee_limit_direction # if too far pretend only max away
-	if _frisbee_ray.is_colliding():
-		if _head.global_translation.distance_to(_frisbee_ray.get_collision_point()) >= (camera_frisbee_min.z):
-			shoot_direction = _head.global_translation.direction_to(
-					_frisbee_ray.get_collision_point()) # aim towards where crosshair hits surface
-		else:
-			shoot_direction = _head.global_translation.direction_to(
-					_start.global_translation) # if too close pretend only min away
-	
-	new_frisbee.linear_velocity = Vector3(_velocity.x / 3, 0, _velocity.z / 3)
-	new_frisbee.apply_central_impulse(shoot_direction * new_frisbee.speed)
+	new_frisbee.linear_velocity = Vector3(_velocity.x / 3, 0, _velocity.z / 3) # 1/3 of player's velocity is inherited
+	new_frisbee.apply_central_impulse(_shoot_direction * new_frisbee.speed)
 
 
 func jumping(delta):
@@ -161,11 +186,3 @@ func apply_movement():
 func model_controls(delta):
 	if _move_dir != Vector3.ZERO:
 		_model.rotation.y = lerp_angle(_model.rotation.y, atan2(_move_dir.x, _move_dir.z), turn_acceleration)
-
-
-func _on_buffer_timeout():
-	pass # Replace with function body.
-
-
-func _on_coyote_timeout():
-	pass # Replace with function body.

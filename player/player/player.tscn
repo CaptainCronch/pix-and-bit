@@ -12,13 +12,13 @@ radius = 0.5
 [sub_resource type="SphereShape" id=4]
 radius = 0.5
 
-[sub_resource type="SpatialMaterial" id=2]
-albedo_color = Color( 1, 1, 0, 1 )
-albedo_texture = ExtResource( 3 )
-
 [sub_resource type="CylinderShape" id=1]
 height = 1.0
 radius = 0.3
+
+[sub_resource type="SpatialMaterial" id=2]
+albedo_color = Color( 1, 1, 0, 1 )
+albedo_texture = ExtResource( 3 )
 
 [node name="Player" type="KinematicBody"]
 collision_layer = 2
@@ -35,21 +35,25 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0 )
 shape = SubResource( 3 )
 
-[node name="CameraHolder" type="SpringArm" parent="."]
+[node name="SpringArm" type="SpringArm" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0 )
 shape = SubResource( 4 )
-spring_length = 5.0
+spring_length = 4.0
 margin = 0.2
 script = ExtResource( 2 )
 
-[node name="Camera" type="Camera" parent="CameraHolder"]
-current = true
+[node name="CameraHolder" type="Position3D" parent="SpringArm"]
 
-[node name="CenterContainer" type="CenterContainer" parent="CameraHolder/Camera"]
+[node name="Camera" type="Camera" parent="SpringArm/CameraHolder"]
+current = true
+near = 0.01
+far = 1000.0
+
+[node name="CenterContainer" type="CenterContainer" parent="SpringArm/CameraHolder/Camera"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="TextureRect" type="TextureRect" parent="CameraHolder/Camera/CenterContainer"]
+[node name="TextureRect" type="TextureRect" parent="SpringArm/CameraHolder/Camera/CenterContainer"]
 modulate = Color( 1, 0, 1, 1 )
 margin_left = 512.0
 margin_top = 300.0
@@ -59,18 +63,26 @@ texture = ExtResource( 4 )
 expand = true
 stretch_mode = 4
 
-[node name="RayCast" type="RayCast" parent="CameraHolder/Camera"]
+[node name="RayCast" type="RayCast" parent="SpringArm/CameraHolder/Camera"]
 enabled = true
 cast_to = Vector3( 0, 0, -10 )
 collision_mask = 9
 collide_with_areas = true
 debug_shape_thickness = 5
 
-[node name="Start" type="Position3D" parent="CameraHolder/Camera/RayCast"]
+[node name="Start" type="Position3D" parent="SpringArm/CameraHolder/Camera/RayCast"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 
-[node name="End" type="Position3D" parent="CameraHolder/Camera/RayCast"]
+[node name="End" type="Position3D" parent="SpringArm/CameraHolder/Camera/RayCast"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -10 )
+
+[node name="Damage" type="Area" parent="."]
+collision_layer = 2
+collision_mask = 24
+
+[node name="Collider" type="CollisionShape" parent="Damage"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0 )
+shape = SubResource( 1 )
 
 [node name="Model" type="CSGCylinder" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0 )
@@ -88,13 +100,6 @@ one_shot = true
 wait_time = 0.5
 one_shot = true
 
-[node name="Damage" type="Area" parent="."]
-collision_layer = 2
-collision_mask = 24
-
-[node name="Collider" type="CollisionShape" parent="Damage"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0 )
-shape = SubResource( 1 )
-
-[connection signal="timeout" from="JumpBuffer" to="." method="_on_buffer_timeout"]
-[connection signal="timeout" from="CoyoteTime" to="." method="_on_coyote_timeout"]
+[node name="HoldTimer" type="Timer" parent="."]
+wait_time = 0.3
+one_shot = true
