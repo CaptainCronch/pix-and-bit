@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://player/player/player.gd" type="Script" id=1]
 [ext_resource path="res://player/camera/spring_arm.gd" type="Script" id=2]
@@ -23,15 +23,18 @@ distance_fade_mode = 1
 distance_fade_min_distance = 0.0
 distance_fade_max_distance = 3.0
 
+[sub_resource type="CylinderShape" id=5]
+height = 2.5
+
 [node name="Player" type="KinematicBody"]
-collision_layer = 2
+collision_layer = 4
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_group_": true
 }
 camera_offset = Vector3( 0, 2.5, 0 )
 
-[node name="Head" type="Position3D" parent="."]
+[node name="Head" type="Spatial" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0 )
 
 [node name="Collider" type="CollisionShape" parent="."]
@@ -80,7 +83,7 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -10 )
 
 [node name="Damage" type="Area" parent="."]
-collision_layer = 2
+collision_layer = 4
 collision_mask = 24
 
 [node name="Collider" type="CollisionShape" parent="Damage"]
@@ -106,3 +109,14 @@ one_shot = true
 [node name="HoldTimer" type="Timer" parent="."]
 wait_time = 0.3
 one_shot = true
+
+[node name="FrisbeeReturn" type="Area" parent="."]
+collision_layer = 2
+collision_mask = 4
+
+[node name="Collider" type="CollisionShape" parent="FrisbeeReturn"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0 )
+shape = SubResource( 5 )
+
+[connection signal="area_entered" from="Damage" to="." method="_on_damage_area_entered"]
+[connection signal="area_entered" from="FrisbeeReturn" to="." method="_on_frisbee_return_area_entered"]

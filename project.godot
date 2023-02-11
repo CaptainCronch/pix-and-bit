@@ -86,7 +86,11 @@ config/icon="res://icon.png"
 
 [editor_plugins]
 
-enabled=PoolStringArray( "res://addons/github-integration/plugin.cfg", "res://addons/godot_editor_discord_presence/plugin.cfg", "res://addons/ridiculous_coding/plugin.cfg" )
+enabled=PoolStringArray( "res://addons/godot_editor_discord_presence/plugin.cfg", "res://addons/ridiculous_coding/plugin.cfg" )
+
+[global]
+
+linear=false
 
 [gui]
 
