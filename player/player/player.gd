@@ -115,10 +115,19 @@ func hold_frisbee():
 func shoot_frisbee():
 	var spring_rotation = Vector2(_spring_arm.rotation.x, _spring_arm.rotation.z)
 	
-	if (_hold_angle.distance_to(spring_rotation) >= _ignore_distance): # ignore short swings
-		var shoot_angle :=_hold_angle.direction_to(spring_rotation).angle()
-	
 	var new_frisbee = frisbee.instance()
+	
+	if (_hold_angle.distance_to(spring_rotation) >= _ignore_distance): # ignore short swings
+		var shoot_angle := rad2deg(_hold_angle.direction_to(spring_rotation).angle())
+
+		if shoot_angle <= 120 and shoot_angle >= 60:
+			new_frisbee.current_throw = new_frisbee.throw.TOMAHAWK
+		elif shoot_angle >= 240 and shoot_angle <= 300:
+			new_frisbee.current_throw = new_frisbee.throw.ROLL
+		elif shoot_angle > 120 and shoot_angle < 240:
+			new_frisbee.current_throw = new_frisbee.throw.LEFT
+		else: # should be 60 > angle > 300
+			new_frisbee.current_throw = new_frisbee.throw.RIGHT
 	
 	get_tree().get_root().get_child(
 			get_tree().get_root().get_child_count() - 1

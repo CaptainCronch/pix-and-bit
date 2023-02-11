@@ -1,5 +1,13 @@
 extends RigidBody
 
+export var base_speed := 15
+export var tomahawk_speed := 20
+export var roll_speed := 25
+export var angled_speed := 15
+export var damage := 1
+export var disable_speed := 10
+export var spin_speed := 0.1
+
 enum throw {
 	STRAIGHT,
 	TOMAHAWK,
@@ -8,13 +16,10 @@ enum throw {
 	LEFT,
 }
 
-export var speed := 15
-export var damage := 1
-export var disable_speed := 3
-export var spin_speed := 0.1
+var current_throw : int = throw.STRAIGHT
 
 var _active := true
-var _current_throw : int = throw.STRAIGHT
+var _speed := base_speed
 
 onready var _model : CSGCylinder = $Model
 
@@ -26,7 +31,7 @@ func _ready():
 func _physics_process(delta):
 	var horizontal_speed = Vector2(linear_velocity.x, linear_velocity.z).length()
 	
-	_model.rotate(Vector3.UP, spin_speed * inverse_lerp(0, speed, horizontal_speed))
+	_model.rotate(Vector3.UP, spin_speed * inverse_lerp(0, _speed, horizontal_speed))
 	
 	if  horizontal_speed <= disable_speed:
 		$Collider.disabled = true

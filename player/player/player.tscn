@@ -19,6 +19,9 @@ radius = 0.3
 [sub_resource type="SpatialMaterial" id=2]
 albedo_color = Color( 1, 1, 0, 1 )
 albedo_texture = ExtResource( 3 )
+distance_fade_mode = 1
+distance_fade_min_distance = 0.0
+distance_fade_max_distance = 3.0
 
 [node name="Player" type="KinematicBody"]
 collision_layer = 2
@@ -42,7 +45,7 @@ spring_length = 4.0
 margin = 0.2
 script = ExtResource( 2 )
 
-[node name="CameraHolder" type="Position3D" parent="SpringArm"]
+[node name="CameraHolder" type="Spatial" parent="SpringArm"]
 
 [node name="Camera" type="Camera" parent="SpringArm/CameraHolder"]
 current = true
