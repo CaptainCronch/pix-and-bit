@@ -1,19 +1,23 @@
 extends SpringArm
 
-export var mouse_sensitivity = 0.1
-export var zoom_sensitivity = 1
-export var min_zoom = 3
-export var max_zoom = 5
+export var mouse_sensitivity := 0.1
+export var zoom_sensitivity := 1
+export var camera_acceleration = 1
 
+export var min_zoom := 3
+export var max_zoom := 5
 export var max_offset := 3
-export var min_offset := 1.5
+export var min_offset := 1
 
-onready var player = $".."
+onready var _player : KinematicBody = $".."
+onready var _camera : Camera = $CameraHolder/Camera
+onready var _camera_holder : Spatial = $CameraHolder
 
 
 func _ready():
 	set_as_toplevel(true)
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	_camera.set_as_toplevel(true)
 
 
 func _input(event):
@@ -36,6 +40,8 @@ func _process(delta):
 	
 	spring_length = lerp(min_zoom, max_zoom, clamp(inverse_lerp(50, -50, rotation_degrees.x), 0, 1))
 	# the camera offset is always proportional to the rotation
-	player.camera_offset.y = lerp(min_offset, max_offset,
-			clamp(inverse_lerp(50.0, -50.0, rotation_degrees.x), 0, 1))
+	_player.camera_offset.y = lerp(min_offset, max_offset,
+			clamp(inverse_lerp(70.0, -30.0, rotation_degrees.x), 0, 1))
 	
+	_camera.global_translation = lerp(_camera.global_translation, _camera_holder.global_translation, camera_acceleration)
+	_camera.rotation = rotation

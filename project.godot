@@ -84,16 +84,13 @@ config/name="Pix and Bit"
 run/main_scene="res://scenes/test.tscn"
 config/icon="res://icon.png"
 
-[autoload]
-
-PluginSettings="*res://addons/github-integration/scripts/PluginSettings.gd"
-IconLoaderGithub="*res://addons/github-integration/scripts/IconLoaderGithub.gd"
-UserData="*res://addons/github-integration/scripts/user_data.gd"
-RestHandler="*res://addons/github-integration/scenes/RestHandler.tscn"
-
 [editor_plugins]
 
-enabled=PoolStringArray( "res://addons/godot_editor_discord_presence/plugin.cfg" )
+enabled=PoolStringArray( "res://addons/godot_editor_discord_presence/plugin.cfg", "res://addons/ridiculous_coding/plugin.cfg" )
+
+[global]
+
+linear=false
 
 [gui]
 
