@@ -42,9 +42,7 @@ var _frisbee_limit_direction := Vector3.ZERO
 var _holding_frisbee := false
 var _shoot_direction := Vector3.ZERO
 var _angle_movement := Vector2.ZERO
-var _frisbees_left := 2
-var _frisbees_out := []
-var _frisbees_returning := []
+var _frisbees = []
 
 
 onready var _model : CSGCylinder = $Model
@@ -60,7 +58,7 @@ onready var _start : Position3D = $SpringArm/CameraHolder/Camera/RayCast/Start
 onready var _hold_timer : Timer = $HoldTimer
 
 
-var frisbee := preload("res://player/player/weapons/frisbee/frisbee.tscn")
+var frisbee := preload("res://player/weapons/frisbee/frisbee.tscn")
 
 
 func _ready():
@@ -71,6 +69,7 @@ func _ready():
 
 func _process(delta):
 	_spring_arm.translation = translation + camera_offset
+	_head.rotation = _spring_arm.rotation
 	
 	_frisbee_limit_direction = _head.global_translation.direction_to(
 			_end.global_translation)
@@ -104,8 +103,6 @@ func hold_frisbee():
 	_angle_movement = Vector2.ZERO
 	_hold_timer.start(frisbee_hold_time)
 	
-	_head.rotation = Vector3(_spring_arm.rotation.x, _spring_arm.rotation.y, 0)
-	
 	_shoot_direction = _frisbee_limit_direction # if too far pretend only max away
 	
 	if not _frisbee_ray.is_colliding(): return
@@ -121,43 +118,34 @@ func hold_frisbee():
 func shoot_frisbee():
 	_holding_frisbee = false
 	
-	if _frisbees_left > 0:
+	var new_frisbee := frisbee.instance()
+	
+	if (_angle_movement.length() >= ignore_distance): # ignore short swings
+		var shoot_angle := wrapf(rad2deg(_angle_movement.angle()), 0, 360)
 		
-		_frisbees_left -= 1
-		var new_frisbee := frisbee.instance()
-		_frisbees_out.append(new_frisbee)
-		
-		if (_angle_movement.length() >= ignore_distance): # ignore short swings
-			var shoot_angle := wrapf(rad2deg(_angle_movement.angle()), 0, 360)
-			
-			if shoot_angle >= 60 and shoot_angle <= 120: # issue with 0
-				new_frisbee.current_throw = new_frisbee.throw.TOMAHAWK
-				new_frisbee.speed = new_frisbee.tomahawk_speed
-			elif shoot_angle >= 240 and shoot_angle <= 300: # bottom 45 degrees
-				new_frisbee.current_throw = new_frisbee.throw.ROLL
-				new_frisbee.speed = new_frisbee.roll_speed
-			elif shoot_angle > 120 and shoot_angle < 240: # left 120 degrees
-				new_frisbee.current_throw = new_frisbee.throw.LEFT
-				new_frisbee.speed = new_frisbee.angled_speed
-			else: # should be 60 > angle > 300, right 120 degrees
-				new_frisbee.current_throw = new_frisbee.throw.RIGHT
-				new_frisbee.speed = new_frisbee.angled_speed
-		
-		get_tree().get_root().get_child(
-				get_tree().get_root().get_child_count() - 1
-				).add_child(new_frisbee) # always add child to the last child of the root node
-		
-		new_frisbee.player = self
-		new_frisbee.global_translation = _head.global_translation
-		new_frisbee.rotation.y = _head.rotation.y
-		
-		#new_frisbee.linear_velocity = Vector3(_velocity.x / 3, 0, _velocity.z / 3) # 1/3 of player's velocity is inherited
-		new_frisbee.apply_central_impulse(_shoot_direction * new_frisbee.speed)
-	else:
-		print(_frisbees_out.size())
-		if _frisbees_out.size() > 0:
-			_frisbees_out[0].back()
-			_frisbees_returning.append(_frisbees_out.pop_front())
+		if shoot_angle >= 60 and shoot_angle <= 120: # issue with 0
+			new_frisbee.current_throw = new_frisbee.throw.TOMAHAWK
+			new_frisbee.speed = new_frisbee.tomahawk_speed
+		elif shoot_angle >= 240 and shoot_angle <= 300: # bottom 45 degrees
+			new_frisbee.current_throw = new_frisbee.throw.ROLL
+			new_frisbee.speed = new_frisbee.roll_speed
+		elif shoot_angle > 120 and shoot_angle < 240: # left 120 degrees
+			new_frisbee.current_throw = new_frisbee.throw.LEFT
+			new_frisbee.speed = new_frisbee.angled_speed
+		else: # should be 60 > angle > 300, right 120 degrees
+			new_frisbee.current_throw = new_frisbee.throw.RIGHT
+			new_frisbee.speed = new_frisbee.angled_speed
+	
+	get_tree().get_root().get_child(
+			get_tree().get_root().get_child_count() - 1
+			).add_child(new_frisbee) # always add child to the last child of the root node
+	
+	new_frisbee.player = self
+	new_frisbee.global_translation = _head.global_translation
+	new_frisbee.rotation.y = _head.rotation.y
+	
+	#new_frisbee.linear_velocity = Vector3(_velocity.x / 3, 0, _velocity.z / 3) # 1/3 of player's velocity is inherited
+	new_frisbee.apply_central_impulse(_shoot_direction * new_frisbee.speed)
 
 
 func jumping(delta):
@@ -228,8 +216,4 @@ func _on_damage_area_entered(area):
 
 
 func _on_frisbee_return_area_entered(area):
-	print("hit area")
-	if _frisbees_returning.size() <= 0: return
-	_frisbees_returning.pop_front()
-	_frisbees_left += 1
-	area.get_parent().queue_free()
+	pass

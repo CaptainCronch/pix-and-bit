@@ -50,7 +50,6 @@ func _ready():
 
 func _physics_process(delta):
 	var horizontal_speed := Vector3(linear_velocity.x, linear_velocity.y / 2, linear_velocity.z).length()
-	var forward_speed_ratio := inverse_lerp(0, speed, linear_velocity.x)
 	
 	_model.rotate(Vector3.UP, spin_speed * inverse_lerp(0, speed, horizontal_speed))
 	

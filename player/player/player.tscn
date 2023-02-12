@@ -27,7 +27,7 @@ distance_fade_max_distance = 3.0
 height = 2.5
 
 [node name="Player" type="KinematicBody"]
-collision_layer = 4
+collision_layer = 2
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_group_": true
