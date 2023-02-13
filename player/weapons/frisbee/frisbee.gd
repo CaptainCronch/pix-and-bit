@@ -6,9 +6,9 @@ export var roll_speed := 35
 export var angled_speed := 15
 export var damage := 1
 export var disable_speed := 5
-export var spin_speed := 0.1
+export var spin_speed := 20
 export var curve_speed := 10
-export var return_speed := 0.3
+export var return_speed := 0.1
 
 enum throw {
 	STRAIGHT,
@@ -22,8 +22,9 @@ var current_throw : int = throw.STRAIGHT
 var speed := base_speed
 var player : KinematicBody
 var returning := false
+var active := true
 
-var _active := true
+var _horizontal_speed := 0.0
 
 onready var _model : CSGCylinder = $Model
 onready var _damage_area : Area = $Damage
@@ -49,9 +50,9 @@ func _ready():
 
 
 func _physics_process(delta):
-	var horizontal_speed := Vector3(linear_velocity.x, linear_velocity.y / 2, linear_velocity.z).length()
+	_horizontal_speed = Vector3(linear_velocity.x, linear_velocity.y / 2, linear_velocity.z).length()
 	
-	_model.rotate(Vector3.UP, spin_speed * inverse_lerp(0, speed, horizontal_speed))
+	_model.rotate(Vector3.UP, spin_speed * inverse_lerp(0, speed, _horizontal_speed) * delta)
 	
 	# ratio of forward velocity to side velocity is directly proportional to ratio of current velocity to 0
 	# remove a portion of forward velocity and add it to the side velocity
@@ -63,18 +64,19 @@ func _physics_process(delta):
 		throw.ROLL:
 			pass
 		throw.RIGHT:
-			if _active: add_central_force(Vector3(curve_speed, 0, 0).rotated(Vector3.UP, rotation.y))
+			if active: add_central_force(Vector3(curve_speed, 0, 0).rotated(Vector3.UP, rotation.y))
 		throw.LEFT:
-			if _active: add_central_force(Vector3(-curve_speed, 0, 0).rotated(Vector3.UP, rotation.y))
+			if active: add_central_force(Vector3(-curve_speed, 0, 0).rotated(Vector3.UP, rotation.y))
 		_:
 			pass
 	
-	if  horizontal_speed <= disable_speed and _active:
+	if _horizontal_speed <= disable_speed and active:
 		disable()
 	
 	if returning:
+		#add_central_force(global_translation.direction_to(player.global_translation + Vector3.UP) * return_speed)
 		global_translation = lerp(global_translation, player.global_translation + Vector3.UP, return_speed)
-		rotation += Vector3(1, 1, 1) * spin_speed
+		rotation += Vector3(1, 1, 1) * spin_speed * delta
 
 
 func back():
@@ -87,7 +89,7 @@ func back():
 
 
 func disable():
-	_active = false
+	active = false
 	$Collider.disabled = true
 	$InactiveCollider.disabled = false
 	_damage_area.monitorable = false
@@ -98,7 +100,11 @@ func disable():
 
 
 func _on_body_entered(body):
-	if current_throw == throw.TOMAHAWK and body.get_collision_layer_bit(0): disable()
+	if not body.get_collision_layer_bit(0): return
+	if current_throw == throw.TOMAHAWK: disable()
+	elif current_throw == throw.RIGHT or current_throw == throw.LEFT:
+		if _horizontal_speed <= (disable_speed / 2) and active:
+			disable() 
 #	if Vector2(linear_velocity.x, linear_velocity.z).length() <= disable_speed:
 #		$SelfDestruct.start($SelfDestruct.time_left / 2)
 

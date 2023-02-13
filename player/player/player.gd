@@ -26,6 +26,7 @@ export var camera_frisbee_max := Vector3(0, 0, -20)
 export var camera_frisbee_min := Vector3(0, 0, -4)
 export var frisbee_hold_time := 0.3
 export var ignore_distance := 100
+export var max_frisbees := 2
 
 
 var _velocity := Vector3.ZERO
@@ -42,7 +43,9 @@ var _frisbee_limit_direction := Vector3.ZERO
 var _holding_frisbee := false
 var _shoot_direction := Vector3.ZERO
 var _angle_movement := Vector2.ZERO
-var _frisbees = []
+var _frisbees_out := []
+var _frisbees_returning := []
+var _frisbees_left := max_frisbees
 
 
 onready var _model : CSGCylinder = $Model
@@ -118,34 +121,43 @@ func hold_frisbee():
 func shoot_frisbee():
 	_holding_frisbee = false
 	
-	var new_frisbee := frisbee.instance()
-	
-	if (_angle_movement.length() >= ignore_distance): # ignore short swings
-		var shoot_angle := wrapf(rad2deg(_angle_movement.angle()), 0, 360)
+	if _frisbees_left > 0:
+		var new_frisbee := frisbee.instance()
 		
-		if shoot_angle >= 60 and shoot_angle <= 120: # issue with 0
-			new_frisbee.current_throw = new_frisbee.throw.TOMAHAWK
-			new_frisbee.speed = new_frisbee.tomahawk_speed
-		elif shoot_angle >= 240 and shoot_angle <= 300: # bottom 45 degrees
-			new_frisbee.current_throw = new_frisbee.throw.ROLL
-			new_frisbee.speed = new_frisbee.roll_speed
-		elif shoot_angle > 120 and shoot_angle < 240: # left 120 degrees
-			new_frisbee.current_throw = new_frisbee.throw.LEFT
-			new_frisbee.speed = new_frisbee.angled_speed
-		else: # should be 60 > angle > 300, right 120 degrees
-			new_frisbee.current_throw = new_frisbee.throw.RIGHT
-			new_frisbee.speed = new_frisbee.angled_speed
-	
-	get_tree().get_root().get_child(
-			get_tree().get_root().get_child_count() - 1
-			).add_child(new_frisbee) # always add child to the last child of the root node
-	
-	new_frisbee.player = self
-	new_frisbee.global_translation = _head.global_translation
-	new_frisbee.rotation.y = _head.rotation.y
-	
-	#new_frisbee.linear_velocity = Vector3(_velocity.x / 3, 0, _velocity.z / 3) # 1/3 of player's velocity is inherited
-	new_frisbee.apply_central_impulse(_shoot_direction * new_frisbee.speed)
+		if (_angle_movement.length() >= ignore_distance): # ignore short swings
+			var shoot_angle := wrapf(rad2deg(_angle_movement.angle()), 0, 360)
+			
+			if shoot_angle >= 60 and shoot_angle <= 120: # issue with 0
+				new_frisbee.current_throw = new_frisbee.throw.TOMAHAWK
+				new_frisbee.speed = new_frisbee.tomahawk_speed
+			elif shoot_angle >= 240 and shoot_angle <= 300: # bottom 45 degrees
+				new_frisbee.current_throw = new_frisbee.throw.ROLL
+				new_frisbee.speed = new_frisbee.roll_speed
+			elif shoot_angle > 120 and shoot_angle < 240: # left 120 degrees
+				new_frisbee.current_throw = new_frisbee.throw.LEFT
+				new_frisbee.speed = new_frisbee.angled_speed
+			else: # should be 60 > angle > 300, right 120 degrees
+				new_frisbee.current_throw = new_frisbee.throw.RIGHT
+				new_frisbee.speed = new_frisbee.angled_speed
+		
+		get_tree().get_root().get_child(
+				get_tree().get_root().get_child_count() - 1
+				).add_child(new_frisbee) # always add child to the last child of the root node
+		
+		new_frisbee.player = self
+		new_frisbee.global_translation = _head.global_translation
+		new_frisbee.rotation.y = _head.rotation.y
+		
+		#new_frisbee.linear_velocity = Vector3(_velocity.x / 3, 0, _velocity.z / 3) # 1/3 of player's velocity is inherited
+		new_frisbee.apply_central_impulse(_shoot_direction * new_frisbee.speed)
+		
+		_frisbees_out.append(new_frisbee)
+		_frisbees_left -= 1
+	else:
+		if _frisbees_out.size() > 0:
+			_frisbees_out[0].back()
+			_frisbees_returning.append(_frisbees_out[0])
+			_frisbees_out.pop_front()
 
 
 func jumping(delta):
@@ -216,4 +228,13 @@ func _on_damage_area_entered(area):
 
 
 func _on_frisbee_return_area_entered(area):
-	pass
+	if _frisbees_returning.size() <= 0:
+		return
+	
+	var frisbee_index := _frisbees_returning.find(area.get_parent())
+	if not frisbee_index == -1:
+		_frisbees_returning.pop_at(frisbee_index)
+		_frisbees_left += 1
+		area.get_parent().queue_free()
+	else:
+		print("if you can read this something went seriously wrong")
