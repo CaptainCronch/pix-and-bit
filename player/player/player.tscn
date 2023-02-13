@@ -114,10 +114,10 @@ one_shot = true
 [node name="FrisbeeReturn" type="Area" parent="."]
 collision_layer = 2
 collision_mask = 4
+monitorable = false
 
 [node name="Collider" type="CollisionShape" parent="FrisbeeReturn"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0 )
 shape = SubResource( 5 )
 
 [connection signal="area_entered" from="Damage" to="." method="_on_damage_area_entered"]
-[connection signal="area_entered" from="FrisbeeReturn" to="." method="_on_frisbee_return_area_entered"]

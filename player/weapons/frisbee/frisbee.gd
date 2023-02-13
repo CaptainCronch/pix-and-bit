@@ -9,6 +9,7 @@ export var disable_speed := 5
 export var spin_speed := 20
 export var curve_speed := 10
 export var return_speed := 0.1
+export var return_time := 1
 
 enum throw {
 	STRAIGHT,
@@ -28,6 +29,7 @@ var _horizontal_speed := 0.0
 
 onready var _model : CSGCylinder = $Model
 onready var _damage_area : Area = $Damage
+onready var _return_timer : Timer = $Return
 
 
 func _ready():
@@ -50,7 +52,7 @@ func _ready():
 
 
 func _physics_process(delta):
-	_horizontal_speed = Vector3(linear_velocity.x, linear_velocity.y / 2, linear_velocity.z).length()
+	_horizontal_speed = Vector3(linear_velocity.x, linear_velocity.y, linear_velocity.z).length()
 	
 	_model.rotate(Vector3.UP, spin_speed * inverse_lerp(0, speed, _horizontal_speed) * delta)
 	
@@ -80,6 +82,8 @@ func _physics_process(delta):
 
 
 func back():
+	player.frisbees_returning.append(self)
+	active = true
 	_damage_area.set_collision_mask_bit(1, true)
 	$InactiveCollider.disabled = true
 	_damage_area.monitorable = true
@@ -89,6 +93,9 @@ func back():
 
 
 func disable():
+	if returning or not active: return
+	
+	_return_timer.start(return_time)
 	active = false
 	$Collider.disabled = true
 	$InactiveCollider.disabled = false
@@ -103,14 +110,14 @@ func _on_body_entered(body):
 	if not body.get_collision_layer_bit(0): return
 	if current_throw == throw.TOMAHAWK: disable()
 	elif current_throw == throw.RIGHT or current_throw == throw.LEFT:
-		if _horizontal_speed <= (disable_speed / 2) and active:
+		if _horizontal_speed <= (disable_speed) and active:
 			disable() 
 #	if Vector2(linear_velocity.x, linear_velocity.z).length() <= disable_speed:
 #		$SelfDestruct.start($SelfDestruct.time_left / 2)
 
 
 func _on_return_timeout():
-	pass
+	back()
 
 
 func _on_damage_area_entered(area):

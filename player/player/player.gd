@@ -29,6 +29,9 @@ export var ignore_distance := 100
 export var max_frisbees := 2
 
 
+var frisbees_returning := []
+
+
 var _velocity := Vector3.ZERO
 var _snap_vector := snap_distance
 var _move_dir := Vector3.ZERO
@@ -44,7 +47,6 @@ var _holding_frisbee := false
 var _shoot_direction := Vector3.ZERO
 var _angle_movement := Vector2.ZERO
 var _frisbees_out := []
-var _frisbees_returning := []
 var _frisbees_left := max_frisbees
 
 
@@ -59,6 +61,7 @@ onready var _frisbee_ray : RayCast = $SpringArm/CameraHolder/Camera/RayCast
 onready var _end : Position3D = $SpringArm/CameraHolder/Camera/RayCast/End
 onready var _start : Position3D = $SpringArm/CameraHolder/Camera/RayCast/Start
 onready var _hold_timer : Timer = $HoldTimer
+onready var _return_area : Area = $FrisbeeReturn
 
 
 var frisbee := preload("res://player/weapons/frisbee/frisbee.tscn")
@@ -85,6 +88,7 @@ func _physics_process(delta):
 	get_input()
 	jumping(delta)
 	apply_movement()
+	check_collisions()
 	model_controls(delta)
 
 
@@ -156,7 +160,6 @@ func shoot_frisbee():
 	else:
 		if _frisbees_out.size() > 0:
 			_frisbees_out[0].back()
-			_frisbees_returning.append(_frisbees_out[0])
 			_frisbees_out.pop_front()
 
 
@@ -213,6 +216,15 @@ func apply_movement():
 	_velocity = move_and_slide_with_snap(_velocity, _snap_vector, Vector3.UP, true)
 
 
+func check_collisions():
+	if frisbees_returning.size() <= 0: return
+	if _return_area.overlaps_area(frisbees_returning[0].get_node("Damage")):
+		_frisbees_left += 1
+		var _frisbee_to_delete : RigidBody = frisbees_returning.pop_front()
+		_frisbees_out.pop_front()
+		_frisbee_to_delete.queue_free()
+
+
 func model_controls(delta):
 	if _move_dir != Vector3.ZERO:
 		_model.rotation.y = lerp_angle(_model.rotation.y, atan2(_move_dir.x, _move_dir.z), turn_acceleration)
@@ -226,15 +238,26 @@ func _input(event):
 func _on_damage_area_entered(area):
 	pass
 
-
+var i := 0
 func _on_frisbee_return_area_entered(area):
-	if _frisbees_returning.size() <= 0:
-		return
-	
-	var frisbee_index := _frisbees_returning.find(area.get_parent())
-	if not frisbee_index == -1:
-		_frisbees_returning.pop_at(frisbee_index)
+#	if frisbees_returning.size() <= 0:
+#		return
+#
+#	var frisbee_index := frisbees_returning.find(area.get_parent())
+#	if not frisbee_index == -1:
+	if area.get_parent().returning:
+#		frisbees_returning.pop_at(frisbee_index)
 		_frisbees_left += 1
 		area.get_parent().queue_free()
 	else:
-		print("if you can read this something went seriously wrong")
+		i += 1
+		print("passed without collecting " + String(i))
+
+
+func _on_frisbee_return_body_entered(body):
+	if body.returning:
+		_frisbees_left += 1
+		body.queue_free()
+	else:
+		i += 1
+		print("passed without collecting " + String(i))
