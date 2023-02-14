@@ -30,13 +30,14 @@ func _input(event):
 
 
 func _process(delta):
-#	var zoom_dir = 0
-#
-#	if Input.is_action_just_released("zoom_in"): zoom_dir += 1
-#	if Input.is_action_just_released("zoom_out"): zoom_dir -= 1
-#
-#	spring_length = clamp(spring_length + (zoom_dir * zoom_sensitivity),
-#			min_zoom, max_zoom)
+	if Input.is_action_just_pressed("mouse_escape"):
+		if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+		elif Input.mouse_mode == Input.MOUSE_MODE_VISIBLE:
+			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	
+	if Input.is_action_just_pressed("fullscreen"):
+		OS.window_fullscreen = !OS.window_fullscreen
 	
 	spring_length = lerp(min_zoom, max_zoom, clamp(inverse_lerp(50, -50, rotation_degrees.x), 0, 1))
 	# the camera offset is always proportional to the rotation

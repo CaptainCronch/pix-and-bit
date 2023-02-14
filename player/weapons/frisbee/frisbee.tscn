@@ -1,7 +1,12 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://player/weapons/frisbee/frisbee.gd" type="Script" id=1]
 [ext_resource path="res://icon.png" type="Texture" id=2]
+
+[sub_resource type="PhysicsMaterial" id=6]
+friction = 0.0
+rough = true
+bounce = 0.5
 
 [sub_resource type="SphereShape" id=3]
 radius = 0.3
@@ -19,8 +24,9 @@ radius = 0.5
 
 [node name="Frisbee" type="RigidBody"]
 collision_layer = 4
-collision_mask = 21
+collision_mask = 5
 mass = 0.5
+physics_material_override = SubResource( 6 )
 gravity_scale = 0.8
 continuous_cd = true
 contacts_reported = 3
@@ -47,18 +53,9 @@ material = SubResource( 2 )
 
 [node name="Damage" type="Area" parent="."]
 collision_layer = 4
-collision_mask = 8
+collision_mask = 24
 
 [node name="Collider" type="CollisionShape" parent="Damage"]
-shape = SubResource( 4 )
-
-[node name="Collection" type="Area" parent="."]
-collision_layer = 4
-collision_mask = 2
-monitoring = false
-monitorable = false
-
-[node name="Collider" type="CollisionShape" parent="Collection"]
 shape = SubResource( 4 )
 
 [node name="Return" type="Timer" parent="."]
@@ -66,5 +63,4 @@ one_shot = true
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]
 [connection signal="area_entered" from="Damage" to="." method="_on_damage_area_entered"]
-[connection signal="area_entered" from="Collection" to="." method="_on_collection_area_entered"]
 [connection signal="timeout" from="Return" to="." method="_on_return_timeout"]

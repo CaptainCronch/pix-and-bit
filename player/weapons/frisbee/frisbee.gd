@@ -2,8 +2,8 @@ extends RigidBody
 
 export var base_speed := 15
 export var tomahawk_speed := 20
-export var roll_speed := 35
-export var angled_speed := 15
+export var roll_speed := 30
+export var angled_speed := 20
 export var damage := 1
 export var disable_speed := 5
 export var spin_speed := 20
@@ -30,7 +30,6 @@ var _horizontal_speed := 0.0
 onready var _model : CSGCylinder = $Model
 onready var _damage_area : Area = $Damage
 onready var _return_timer : Timer = $Return
-onready var _collection : Area = $Collection
 
 
 func _ready():
@@ -39,11 +38,13 @@ func _ready():
 			rotation_degrees.z = 0
 		throw.TOMAHAWK:
 			rotation_degrees.z = 90
-			gravity_scale = 3
+			gravity_scale = 4
+			physics_material_override.bounce = 1.0
+			physics_material_override.friction = 0.5
 		throw.ROLL:
 			rotation_degrees.z = -90
 			gravity_scale = 2
-			linear_damp *= 1.5
+			physics_material_override.bounce = 0.0
 		throw.RIGHT:
 			rotation_degrees.z = -45
 		throw.LEFT:
@@ -76,26 +77,25 @@ func _physics_process(delta):
 	if _horizontal_speed <= disable_speed and active:
 		disable()
 	
-	if returning:
-		#add_central_force(global_translation.direction_to(player.global_translation + Vector3.UP) * return_speed)
-		global_translation = lerp(global_translation, player.global_translation + Vector3.UP, return_speed)
-		rotation += Vector3(1, 0, 1) * spin_speed * delta
+#	if returning:
+#		#add_central_force(global_translation.direction_to(player.global_translation + Vector3.UP) * return_speed)
+#		global_translation = lerp(global_translation, player.global_translation + Vector3.UP, return_speed)
+#		rotation += Vector3(1, 0, 1) * spin_speed * delta
 
 
-func back():
-#	player.frisbees_returning.append(self)
-	disable()
-	active = true
-	_collection.monitoring = true
-	$InactiveCollider.disabled = true
-	gravity_scale = 0
-	returning = true
-	
-	player.frisbees_out.pop_at(player.frisbees_out.find(self))
+#func back():
+#	disable()
+#	active = true
+#	_collection.monitoring = true
+#	$InactiveCollider.disabled = true
+#	gravity_scale = 0
+#	returning = true
+#
+#	player.frisbees_out.pop_at(player.frisbees_out.find(self))
 
 
 func disable():
-	if returning or not active: return
+	if not active: return
 	
 	_return_timer.start(return_time)
 	active = false
@@ -119,13 +119,14 @@ func _on_body_entered(body):
 
 
 func _on_return_timeout():
-	back()
+	pass
+#	back()
 
 
 func _on_damage_area_entered(area):
 	pass
 
 
-func _on_collection_area_entered(area):
-	player.frisbees_left += 1
-	queue_free()
+#func _on_collection_area_entered(area):
+#	player.frisbees_left += 1
+#	queue_free()
