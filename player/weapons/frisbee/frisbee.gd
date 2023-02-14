@@ -8,7 +8,7 @@ export var damage := 1
 export var disable_speed := 5
 export var spin_speed := 20
 export var curve_speed := 10
-export var return_speed := 0.1
+export var return_speed := 0.15
 export var return_time := 1
 
 enum throw {
@@ -30,6 +30,7 @@ var _horizontal_speed := 0.0
 onready var _model : CSGCylinder = $Model
 onready var _damage_area : Area = $Damage
 onready var _return_timer : Timer = $Return
+onready var _collection : Area = $Collection
 
 
 func _ready():
@@ -78,18 +79,19 @@ func _physics_process(delta):
 	if returning:
 		#add_central_force(global_translation.direction_to(player.global_translation + Vector3.UP) * return_speed)
 		global_translation = lerp(global_translation, player.global_translation + Vector3.UP, return_speed)
-		rotation += Vector3(1, 1, 1) * spin_speed * delta
+		rotation += Vector3(1, 0, 1) * spin_speed * delta
 
 
 func back():
-	player.frisbees_returning.append(self)
+#	player.frisbees_returning.append(self)
+	disable()
 	active = true
-	_damage_area.set_collision_mask_bit(1, true)
+	_collection.monitoring = true
 	$InactiveCollider.disabled = true
-	_damage_area.monitorable = true
-	_damage_area.monitoring = true
 	gravity_scale = 0
 	returning = true
+	
+	player.frisbees_out.pop_at(player.frisbees_out.find(self))
 
 
 func disable():
@@ -122,3 +124,8 @@ func _on_return_timeout():
 
 func _on_damage_area_entered(area):
 	pass
+
+
+func _on_collection_area_entered(area):
+	player.frisbees_left += 1
+	queue_free()

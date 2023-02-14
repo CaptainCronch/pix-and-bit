@@ -29,7 +29,8 @@ export var ignore_distance := 100
 export var max_frisbees := 2
 
 
-var frisbees_returning := []
+#var frisbees_returning := []
+var frisbees_out := []
 
 
 var _velocity := Vector3.ZERO
@@ -46,8 +47,7 @@ var _frisbee_limit_direction := Vector3.ZERO
 var _holding_frisbee := false
 var _shoot_direction := Vector3.ZERO
 var _angle_movement := Vector2.ZERO
-var _frisbees_out := []
-var _frisbees_left := max_frisbees
+var frisbees_left := max_frisbees
 
 
 onready var _model : CSGCylinder = $Model
@@ -125,7 +125,8 @@ func hold_frisbee():
 func shoot_frisbee():
 	_holding_frisbee = false
 	
-	if _frisbees_left > 0:
+	if frisbees_left > 0:
+		frisbees_left -= 1
 		var new_frisbee := frisbee.instance()
 		
 		if (_angle_movement.length() >= ignore_distance): # ignore short swings
@@ -155,12 +156,10 @@ func shoot_frisbee():
 		#new_frisbee.linear_velocity = Vector3(_velocity.x / 3, 0, _velocity.z / 3) # 1/3 of player's velocity is inherited
 		new_frisbee.apply_central_impulse(_shoot_direction * new_frisbee.speed)
 		
-		_frisbees_out.append(new_frisbee)
-		_frisbees_left -= 1
-	else:
-		if _frisbees_out.size() > 0:
-			_frisbees_out[0].back()
-			_frisbees_out.pop_front()
+		frisbees_out.append(new_frisbee)
+	elif frisbees_out.size() > 0:
+		frisbees_out[1].back()
+		frisbees_out[0].back()
 
 
 func jumping(delta):
@@ -217,12 +216,13 @@ func apply_movement():
 
 
 func check_collisions():
-	if frisbees_returning.size() <= 0: return
-	if _return_area.overlaps_area(frisbees_returning[0].get_node("Damage")):
-		_frisbees_left += 1
-		var _frisbee_to_delete : RigidBody = frisbees_returning.pop_front()
-		_frisbees_out.pop_front()
-		_frisbee_to_delete.queue_free()
+#	if frisbees_returning.size() <= 0: return
+#	if _return_area.overlaps_area(frisbees_returning[0].get_node("Damage")):
+#		frisbees_left += 1
+#		var _frisbee_to_delete : RigidBody = frisbees_returning.pop_front()
+#		frisbees_out.pop_front()
+#		_frisbee_to_delete.queue_free()
+	pass
 
 
 func model_controls(delta):
@@ -247,7 +247,7 @@ func _on_frisbee_return_area_entered(area):
 #	if not frisbee_index == -1:
 	if area.get_parent().returning:
 #		frisbees_returning.pop_at(frisbee_index)
-		_frisbees_left += 1
+		frisbees_left += 1
 		area.get_parent().queue_free()
 	else:
 		i += 1
@@ -256,7 +256,7 @@ func _on_frisbee_return_area_entered(area):
 
 func _on_frisbee_return_body_entered(body):
 	if body.returning:
-		_frisbees_left += 1
+		frisbees_left += 1
 		body.queue_free()
 	else:
 		i += 1
