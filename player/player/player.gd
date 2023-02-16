@@ -14,6 +14,7 @@ export var base_friction := 0.3
 export var air_acceleration := 0.1
 export var air_friction := 0.1
 export var turn_acceleration := 0.1
+export var aim_acceleration := 0.2
 
 export var buffer_time := 0.1
 export var coyote_time := 0.2
@@ -30,10 +31,6 @@ export var max_frisbees := 2
 export var reload_time := 2
 
 
-#var frisbees_returning := []
-var frisbees_out := []
-
-
 var _velocity := Vector3.ZERO
 var _snap_vector := snap_distance
 var _move_dir := Vector3.ZERO
@@ -45,24 +42,28 @@ var _friction := base_friction
 var _health := base_health
 
 var _frisbee_limit_direction := Vector3.ZERO
-var _holding_frisbee := false
+var aiming := false
 var _shoot_direction := Vector3.ZERO
 var _angle_movement := Vector2.ZERO
 var frisbees_left := max_frisbees
 
 
-onready var _model : CSGCylinder = $Model
+onready var _model_holder : Spatial = $ModelHolder
 onready var _spring_arm : SpringArm = $SpringArm
 onready var _camera : Camera = $SpringArm/CameraHolder/Camera
 onready var _buffer_timer : Timer = $JumpBuffer
 onready var _coyote_timer : Timer = $CoyoteTime
 
-onready var _head : Spatial = $Head
+onready var _head : Spatial = $ModelHolder/Model/Body/Head
+onready var _left_wrist : Spatial = $ModelHolder/Model/Body/LeftWrist
+onready var _right_wrist : Spatial = $ModelHolder/Model/Body/RightWrist
+onready var _hand : Spatial = $ModelHolder/Model/Body/Hand
 onready var _frisbee_ray : RayCast = $SpringArm/CameraHolder/Camera/RayCast
 onready var _end : Position3D = $SpringArm/CameraHolder/Camera/RayCast/End
 onready var _start : Position3D = $SpringArm/CameraHolder/Camera/RayCast/Start
 onready var _reload_timer : Timer = $Reload
-
+onready var _right_ring : CSGCylinder = $ModelHolder/RightRing
+onready var _left_ring : CSGCylinder = $ModelHolder/LeftRing
 
 var frisbee := preload("res://player/weapons/frisbee/frisbee.tscn")
 
@@ -84,7 +85,6 @@ func _process(delta):
 		get_tree().quit() # temporary for testing
 
 
-
 func _physics_process(delta):
 	get_input()
 	jumping(delta)
@@ -104,12 +104,34 @@ func get_input():
 		hold_frisbee()
 	if Input.is_action_just_released("action"):
 		shoot_frisbee()
-	
 
 
 func hold_frisbee():
-	_holding_frisbee = true
+	
+	if frisbees_left <= 0:return
+	
+	match frisbees_left:
+			2:
+#				_right_ring.get_node("Tween").set_parallel(true)
+				_right_ring.get_node("Tween").interpolate_property(_right_ring, "global_translation",
+						null, _hand.global_translation, 0.5, Tween.TRANS_SINE, Tween.EASE_OUT)
+				_right_ring.get_node("Tween").interpolate_property(_right_ring, "global_rotation",
+						null, _hand.global_rotation, 0.5, Tween.TRANS_SINE, Tween.EASE_OUT)
+				_right_ring.get_node("Tween").start()
+			1:
+#				_left_ring.get_node("Tween").set_parallel(true)
+				_left_ring.get_node("Tween").interpolate_property(_left_ring, "global_translation",
+						null, _hand.global_translation, 0.5, Tween.TRANS_SINE, Tween.EASE_OUT)
+				_left_ring.get_node("Tween").interpolate_property(_left_ring, "global_rotation",
+						null, _hand.global_rotation, 0.5, Tween.TRANS_SINE, Tween.EASE_OUT)
+				_left_ring.get_node("Tween").start()
+			_:
+				pass
+	
+	aiming = true
 	_angle_movement = Vector2.ZERO
+	
+	_spring_arm.aim_zoom = _spring_arm.max_aim_zoom
 	
 	_shoot_direction = _frisbee_limit_direction # if too far pretend only max away
 	
@@ -124,10 +146,12 @@ func hold_frisbee():
 
 
 func shoot_frisbee():
-	_holding_frisbee = false
+	aiming = false
+	_spring_arm.aim_zoom = 0
 	
 	if frisbees_left > 0:
 		frisbees_left -= 1
+		_reload_timer.start(reload_time)
 		var new_frisbee := frisbee.instance()
 		
 		if (_angle_movement.length() >= ignore_distance): # ignore short swings
@@ -151,7 +175,7 @@ func shoot_frisbee():
 				).add_child(new_frisbee) # always add child to the last child of the root node
 		
 		new_frisbee.player = self
-		new_frisbee.global_translation = _head.global_translation
+		new_frisbee.global_translation = _hand.global_translation
 		new_frisbee.rotation.y = _head.rotation.y
 		
 		#new_frisbee.linear_velocity = Vector3(_velocity.x / 3, 0, _velocity.z / 3) # 1/3 of player's velocity is inherited
@@ -190,7 +214,6 @@ func jumping(delta):
 
 
 func apply_movement():
-	
 	if _grounded:
 		_acceleration = base_acceleration
 		_friction = base_friction
@@ -223,41 +246,22 @@ func check_collisions():
 
 func model_controls(delta):
 	if _move_dir != Vector3.ZERO:
-		_model.rotation.y = lerp_angle(_model.rotation.y, atan2(_move_dir.x, _move_dir.z), turn_acceleration)
+		_model_holder.rotation.y = lerp_angle(_model_holder.rotation.y, atan2(_move_dir.x, _move_dir.z) + PI, turn_acceleration)
+	
+	if aiming:
+		_model_holder.rotation.y = lerp_angle(_model_holder.rotation.y, _spring_arm.rotation.y, aim_acceleration)
 
 
 func _input(event):
-	if event is InputEventMouseMotion and _holding_frisbee:
+	if event is InputEventMouseMotion and aiming:
 		_angle_movement += Vector2(event.relative.x, -event.relative.y)
 
 
 func _on_damage_area_entered(area):
 	pass
 
-var i := 0
-func _on_frisbee_return_area_entered(area):
-#	if frisbees_returning.size() <= 0:
-#		return
-#
-#	var frisbee_index := frisbees_returning.find(area.get_parent())
-#	if not frisbee_index == -1:
-	if area.get_parent().returning:
-#		frisbees_returning.pop_at(frisbee_index)
-		frisbees_left += 1
-		area.get_parent().queue_free()
-	else:
-		i += 1
-		print("passed without collecting " + String(i))
-
-
-func _on_frisbee_return_body_entered(body):
-	if body.returning:
-		frisbees_left += 1
-		body.queue_free()
-	else:
-		i += 1
-		print("passed without collecting " + String(i))
-
 
 func _on_reload_timeout():
 	frisbees_left += 1
+	if frisbees_left < max_frisbees:
+		_reload_timer.start(reload_time)

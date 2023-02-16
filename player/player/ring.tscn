@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://icon.png" type="Texture" id=1]
+
+[sub_resource type="SpatialMaterial" id=2]
+albedo_color = Color( 1, 0, 1, 1 )
+albedo_texture = ExtResource( 1 )
+
+[node name="Frisbee" type="CSGCylinder"]
+radius = 0.2
+height = 0.05
+sides = 16
+material = SubResource( 2 )
+
+[node name="Tween" type="Tween" parent="."]

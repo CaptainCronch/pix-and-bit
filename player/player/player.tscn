@@ -2,8 +2,9 @@
 
 [ext_resource path="res://player/player/player.gd" type="Script" id=1]
 [ext_resource path="res://player/camera/spring_arm.gd" type="Script" id=2]
-[ext_resource path="res://icon.png" type="Texture" id=3]
+[ext_resource path="res://player/player/model/pix.fbx" type="PackedScene" id=3]
 [ext_resource path="res://player/camera/crosshair-dot.png" type="Texture" id=4]
+[ext_resource path="res://player/player/ring.tscn" type="PackedScene" id=5]
 
 [sub_resource type="CylinderShape" id=3]
 height = 1.5
@@ -16,23 +17,13 @@ radius = 0.5
 height = 1.0
 radius = 0.3
 
-[sub_resource type="SpatialMaterial" id=2]
-albedo_color = Color( 1, 1, 0, 1 )
-albedo_texture = ExtResource( 3 )
-distance_fade_mode = 1
-distance_fade_min_distance = 0.0
-distance_fade_max_distance = 3.0
-
-[node name="Player" type="KinematicBody"]
+[node name="Pix" type="KinematicBody"]
 collision_layer = 2
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_group_": true
 }
 camera_offset = Vector3( 0, 2.5, 0 )
-
-[node name="Head" type="Spatial" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0 )
 
 [node name="Collider" type="CollisionShape" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0 )
@@ -88,13 +79,31 @@ collision_mask = 24
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0 )
 shape = SubResource( 1 )
 
-[node name="Model" type="CSGCylinder" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0 )
-radius = 0.5
-height = 1.5
-sides = 16
-smooth_faces = false
-material = SubResource( 2 )
+[node name="ModelHolder" type="Spatial" parent="."]
+
+[node name="Model" parent="ModelHolder" instance=ExtResource( 3 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0.425, 0, 0 )
+
+[node name="Body" type="Spatial" parent="ModelHolder/Model"]
+transform = Transform( 1, 0, 2.13163e-14, 0, 1, 0, -2.13163e-14, 0, 1, 0.425, 0.75, -1.06581e-14 )
+
+[node name="Head" type="Spatial" parent="ModelHolder/Model/Body"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0 )
+
+[node name="LeftWrist" type="Spatial" parent="ModelHolder/Model/Body"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0, 0 )
+
+[node name="RightWrist" type="Spatial" parent="ModelHolder/Model/Body"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 0, 0 )
+
+[node name="Hand" type="Spatial" parent="ModelHolder/Model/Body"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, 0 )
+
+[node name="RightRing" parent="ModelHolder" instance=ExtResource( 5 )]
+transform = Transform( -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, 0.3, 0.75, 0 )
+
+[node name="LeftRing" parent="ModelHolder" instance=ExtResource( 5 )]
+transform = Transform( -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, -0.3, 0.75, 0 )
 
 [node name="JumpBuffer" type="Timer" parent="."]
 wait_time = 0.5

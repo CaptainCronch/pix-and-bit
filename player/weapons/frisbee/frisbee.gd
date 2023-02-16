@@ -10,6 +10,7 @@ export var spin_speed := 20
 export var curve_speed := 10
 export var return_speed := 0.15
 export var return_time := 1
+export var roll_deceleration = 0.1
 
 enum throw {
 	STRAIGHT,
@@ -43,7 +44,7 @@ func _ready():
 			physics_material_override.friction = 0.5
 		throw.ROLL:
 			rotation_degrees.z = -90
-			gravity_scale = 2
+			gravity_scale = 1.5
 			physics_material_override.bounce = 0.0
 		throw.RIGHT:
 			rotation_degrees.z = -45
@@ -106,6 +107,9 @@ func disable():
 	axis_lock_angular_x = false
 	axis_lock_angular_z = false
 	axis_lock_angular_y = false
+	gravity_scale = 1.5
+	physics_material_override.bounce = 0.3
+	physics_material_override.friction = 0.5
 
 
 func _on_body_entered(body):
