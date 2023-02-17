@@ -5,7 +5,7 @@ export var tomahawk_speed := 20
 export var roll_speed := 30
 export var angled_speed := 20
 export var damage := 1
-export var disable_speed := 5
+export var disable_speed := 3
 export var spin_speed := 20
 export var curve_speed := 10
 export var return_speed := 0.15
@@ -26,17 +26,18 @@ var player : KinematicBody
 var returning := false
 var active := true
 
+var _turning := true
 var _horizontal_speed := 0.0
 
 onready var _model : CSGCylinder = $Model
 onready var _damage_area : Area = $Damage
-onready var _return_timer : Timer = $Return
 
 
 func _ready():
 	match current_throw:
 		throw.STRAIGHT:
 			rotation_degrees.z = 0
+			gravity_scale = 0.3
 		throw.TOMAHAWK:
 			rotation_degrees.z = 90
 			gravity_scale = 4
@@ -69,9 +70,9 @@ func _physics_process(delta):
 		throw.ROLL:
 			pass
 		throw.RIGHT:
-			if active: add_central_force(Vector3(curve_speed, 0, 0).rotated(Vector3.UP, rotation.y))
+			if active and _turning: add_central_force(Vector3(curve_speed, 0, 0).rotated(Vector3.UP, rotation.y))
 		throw.LEFT:
-			if active: add_central_force(Vector3(-curve_speed, 0, 0).rotated(Vector3.UP, rotation.y))
+			if active and _turning: add_central_force(Vector3(-curve_speed, 0, 0).rotated(Vector3.UP, rotation.y))
 		_:
 			pass
 	
@@ -98,7 +99,7 @@ func _physics_process(delta):
 func disable():
 	if not active: return
 	
-	_return_timer.start(return_time)
+	$SelfDestruct.start()
 	active = false
 	$Collider.disabled = true
 	$InactiveCollider.disabled = false
@@ -122,15 +123,13 @@ func _on_body_entered(body):
 #		$SelfDestruct.start($SelfDestruct.time_left / 2)
 
 
-func _on_return_timeout():
-	pass
-#	back()
-
-
 func _on_damage_area_entered(area):
 	pass
 
 
-#func _on_collection_area_entered(area):
-#	player.frisbees_left += 1
-#	queue_free()
+func _on_self_destruct_timeout():
+	queue_free()
+
+
+func _on_turn_timeout():
+	_turning = false

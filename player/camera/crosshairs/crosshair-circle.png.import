@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/skittle-generator-icon.png-65a7e927421ee5c32eea5a0af3e10b1a.stex"
+path="res://.import/crosshair-circle.png-dc1545bd0d9dd9dd84bea10c35a09aeb.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://player/camera/skittle-generator-icon.png"
-dest_files=[ "res://.import/skittle-generator-icon.png-65a7e927421ee5c32eea5a0af3e10b1a.stex" ]
+source_file="res://player/camera/crosshairs/crosshair-circle.png"
+dest_files=[ "res://.import/crosshair-circle.png-dc1545bd0d9dd9dd84bea10c35a09aeb.stex" ]
 
 [params]
 

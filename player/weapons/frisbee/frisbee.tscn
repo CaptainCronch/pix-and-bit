@@ -24,7 +24,7 @@ radius = 0.5
 
 [node name="Frisbee" type="RigidBody"]
 collision_layer = 4
-collision_mask = 5
+collision_mask = 37
 mass = 0.5
 physics_material_override = SubResource( 6 )
 gravity_scale = 0.5
@@ -62,9 +62,16 @@ collision_mask = 24
 [node name="Collider" type="CollisionShape" parent="Damage"]
 shape = SubResource( 4 )
 
-[node name="Return" type="Timer" parent="."]
+[node name="SelfDestruct" type="Timer" parent="."]
+wait_time = 3.0
 one_shot = true
+
+[node name="Turn" type="Timer" parent="."]
+wait_time = 2.0
+one_shot = true
+autostart = true
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]
 [connection signal="area_entered" from="Damage" to="." method="_on_damage_area_entered"]
-[connection signal="timeout" from="Return" to="." method="_on_return_timeout"]
+[connection signal="timeout" from="SelfDestruct" to="." method="_on_self_destruct_timeout"]
+[connection signal="timeout" from="Turn" to="." method="_on_turn_timeout"]

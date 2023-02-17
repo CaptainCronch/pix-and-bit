@@ -1,6 +1,6 @@
 extends KinematicBody
 
-export var move_speed := 13.0
+export var move_speed := 10.0
 export var jump_force := 26.0
 
 export var base_gravity := 70.0
@@ -28,7 +28,16 @@ export var camera_frisbee_min := Vector3(0, 0, -4)
 export var frisbee_hold_time := 0.3
 export var ignore_distance := 100
 export var max_frisbees := 2
-export var reload_time := 2
+export var reload_time := 1
+
+
+enum {
+	NONE,
+	UP,
+	DOWN,
+	LEFT,
+	RIGHT,
+}
 
 
 var _velocity := Vector3.ZERO
@@ -47,8 +56,10 @@ var _shoot_direction := Vector3.ZERO
 var _angle_movement := Vector2.ZERO
 var frisbees_left := max_frisbees
 
+var _shoot_angle := 0
+var _aim_dir_general := NONE
 
-onready var _model_holder : Spatial = $ModelHolder
+
 onready var _spring_arm : SpringArm = $SpringArm
 onready var _camera : Camera = $SpringArm/CameraHolder/Camera
 onready var _buffer_timer : Timer = $JumpBuffer
@@ -62,8 +73,17 @@ onready var _frisbee_ray : RayCast = $SpringArm/CameraHolder/Camera/RayCast
 onready var _end : Position3D = $SpringArm/CameraHolder/Camera/RayCast/End
 onready var _start : Position3D = $SpringArm/CameraHolder/Camera/RayCast/Start
 onready var _reload_timer : Timer = $Reload
+
 onready var _right_ring : CSGCylinder = $ModelHolder/RightRing
 onready var _left_ring : CSGCylinder = $ModelHolder/LeftRing
+onready var _model_holder : Spatial = $ModelHolder
+onready var _frisbee_anim : AnimationPlayer = $SpringArm/CameraHolder/Camera/CenterContainer/Crosshair/FrisbeeAnim
+onready var _crosshair_anim : AnimationPlayer = $SpringArm/CameraHolder/Camera/CenterContainer/Crosshair/CrosshairAnim
+onready var _right_arrow : TextureRect = $SpringArm/CameraHolder/Camera/CenterContainer/Crosshair/Right
+onready var _left_arrow : TextureRect = $SpringArm/CameraHolder/Camera/CenterContainer/Crosshair/Left
+onready var _down_arrow : TextureRect = $SpringArm/CameraHolder/Camera/CenterContainer/Crosshair/Down
+onready var _up_arrow : TextureRect = $SpringArm/CameraHolder/Camera/CenterContainer/Crosshair/Up
+
 
 var frisbee := preload("res://player/weapons/frisbee/frisbee.tscn")
 
@@ -100,38 +120,32 @@ func get_input():
 	_move_dir.z = Input.get_action_strength("back") - Input.get_action_strength("forward")
 	_move_dir = _move_dir.rotated(Vector3.UP, _spring_arm.rotation.y).normalized()
 	
-	if Input.is_action_just_pressed("action"):
+	if Input.is_action_just_pressed("action_secondary"):
+		aiming = true
+		_spring_arm.aim_zoom = _spring_arm.max_aim_zoom
+	elif Input.is_action_just_released("action_secondary"):
+		aiming = false
+		_spring_arm.aim_zoom = 0
+	
+	if Input.is_action_just_pressed("action") and aiming:
 		hold_frisbee()
-	if Input.is_action_just_released("action"):
+	elif Input.is_action_just_released("action") and aiming:
 		shoot_frisbee()
+	if Input.is_action_pressed("action") and aiming:
+		shoot_direction()
 
 
 func hold_frisbee():
 	
 	if frisbees_left <= 0:return
 	
-	match frisbees_left:
-			2:
-#				_right_ring.get_node("Tween").set_parallel(true)
-				_right_ring.get_node("Tween").interpolate_property(_right_ring, "global_translation",
-						null, _hand.global_translation, 0.5, Tween.TRANS_SINE, Tween.EASE_OUT)
-				_right_ring.get_node("Tween").interpolate_property(_right_ring, "global_rotation",
-						null, _hand.global_rotation, 0.5, Tween.TRANS_SINE, Tween.EASE_OUT)
-				_right_ring.get_node("Tween").start()
-			1:
-#				_left_ring.get_node("Tween").set_parallel(true)
-				_left_ring.get_node("Tween").interpolate_property(_left_ring, "global_translation",
-						null, _hand.global_translation, 0.5, Tween.TRANS_SINE, Tween.EASE_OUT)
-				_left_ring.get_node("Tween").interpolate_property(_left_ring, "global_rotation",
-						null, _hand.global_rotation, 0.5, Tween.TRANS_SINE, Tween.EASE_OUT)
-				_left_ring.get_node("Tween").start()
-			_:
-				pass
+	_right_arrow.visible = false
+	_left_arrow.visible = false
+	_up_arrow.visible = false
+	_down_arrow.visible = false
+	_frisbee_anim.play("RESET")
 	
-	aiming = true
 	_angle_movement = Vector2.ZERO
-	
-	_spring_arm.aim_zoom = _spring_arm.max_aim_zoom
 	
 	_shoot_direction = _frisbee_limit_direction # if too far pretend only max away
 	
@@ -145,25 +159,33 @@ func hold_frisbee():
 				_start.global_translation) # if too close pretend only min away
 
 
-func shoot_frisbee():
-	aiming = false
-	_spring_arm.aim_zoom = 0
+func shoot_direction():
 	
+	if (_angle_movement.length() >= ignore_distance): # ignore short swings
+		if _shoot_angle >= 60 and _shoot_angle <= 120: # issue with 0
+			_aim_dir_general = DOWN
+		elif _shoot_angle >= 240 and _shoot_angle <= 300: # top 45 degrees
+			_aim_dir_general = UP
+		elif _shoot_angle > 120 and _shoot_angle < 240: # left 120 degrees
+			_aim_dir_general = LEFT
+		else: # should be 60 > angle > 300, right 120 degrees
+			_aim_dir_general = RIGHT
+
+
+func shoot_frisbee():
 	if frisbees_left > 0:
 		frisbees_left -= 1
 		_reload_timer.start(reload_time)
 		var new_frisbee := frisbee.instance()
 		
 		if (_angle_movement.length() >= ignore_distance): # ignore short swings
-			var shoot_angle := wrapf(rad2deg(_angle_movement.angle()), 0, 360)
-			
-			if shoot_angle >= 60 and shoot_angle <= 120: # issue with 0
+			if _shoot_angle >= 60 and _shoot_angle <= 120: # issue with 0
 				new_frisbee.current_throw = new_frisbee.throw.ROLL
 				new_frisbee.speed = new_frisbee.roll_speed
-			elif shoot_angle >= 240 and shoot_angle <= 300: # top 45 degrees
+			elif _shoot_angle >= 240 and _shoot_angle <= 300: # top 45 degrees
 				new_frisbee.current_throw = new_frisbee.throw.TOMAHAWK
 				new_frisbee.speed = new_frisbee.tomahawk_speed
-			elif shoot_angle > 120 and shoot_angle < 240: # left 120 degrees
+			elif _shoot_angle > 120 and _shoot_angle < 240: # left 120 degrees
 				new_frisbee.current_throw = new_frisbee.throw.LEFT
 				new_frisbee.speed = new_frisbee.angled_speed
 			else: # should be 60 > angle > 300, right 120 degrees
@@ -255,6 +277,7 @@ func model_controls(delta):
 func _input(event):
 	if event is InputEventMouseMotion and aiming:
 		_angle_movement += Vector2(event.relative.x, -event.relative.y)
+		_shoot_angle = wrapf(rad2deg(_angle_movement.angle()), 0, 360)
 
 
 func _on_damage_area_entered(area):
@@ -263,5 +286,6 @@ func _on_damage_area_entered(area):
 
 func _on_reload_timeout():
 	frisbees_left += 1
+	_crosshair_anim.play("spin")
 	if frisbees_left < max_frisbees:
 		_reload_timer.start(reload_time)

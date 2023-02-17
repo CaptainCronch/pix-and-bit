@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/crosshair-cross-gap.png-f1eb3cb09544677ca8f7a014f84c07b6.stex"
+path="res://.import/arrow-right.png-11c3af894e4873e6f62325cf18b70465.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://player/camera/crosshair-cross-gap.png"
-dest_files=[ "res://.import/crosshair-cross-gap.png-f1eb3cb09544677ca8f7a014f84c07b6.stex" ]
+source_file="res://player/camera/frisbee/arrow-right.png"
+dest_files=[ "res://.import/arrow-right.png-11c3af894e4873e6f62325cf18b70465.stex" ]
 
 [params]
 

@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/crosshair-cross.png-5fd50a36325dde95eb0b66de89a4aa44.stex"
+path="res://.import/crosshair-corners.png-dfe9bb1d042cb2e2378e902f971b4ab8.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://player/camera/crosshair-cross.png"
-dest_files=[ "res://.import/crosshair-cross.png-5fd50a36325dde95eb0b66de89a4aa44.stex" ]
+source_file="res://player/camera/crosshairs/crosshair-corners.png"
+dest_files=[ "res://.import/crosshair-corners.png-dfe9bb1d042cb2e2378e902f971b4ab8.stex" ]
 
 [params]
 

@@ -1,0 +1,51 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://scenes/test/skybox.tres" type="Environment" id=1]
+[ext_resource path="res://scenes/test/texture_01.png" type="Texture" id=2]
+
+[sub_resource type="Shader" id=1]
+code = "shader_type canvas_item;
+
+uniform vec4 color_gap: hint_color = vec4(0.25);
+uniform vec4 color_stripe: hint_color = vec4(1.0, 0.75, 0.0, 1.0);
+uniform float divisions = 8.0; // increase for more stripe density
+uniform float stripe_bias = 2.5; // 1.0 means no stripes; 2.0 means stripes and gaps are equal size
+uniform float speed = 0.1;
+uniform float angle = 0.7854; // in radians
+
+void fragment() {
+	float w = cos(angle) * UV.x + sin(angle) * UV.y - speed * TIME;
+	if (floor(mod(w * divisions, stripe_bias)) < 0.0001) {
+		COLOR = color_gap;
+	} else {
+		COLOR = color_stripe;
+	}
+}"
+
+[sub_resource type="ShaderMaterial" id=2]
+shader = SubResource( 1 )
+shader_param/color_gap = Color( 0.709804, 0.337255, 0.564706, 1 )
+shader_param/color_stripe = Color( 0.941176, 0.458824, 0.156863, 1 )
+shader_param/divisions = 8.0
+shader_param/stripe_bias = 2.0
+shader_param/speed = 0.05
+shader_param/angle = 0.7854
+
+[node name="Viewport" type="Viewport"]
+size = Vector2( 1024, 1024 )
+own_world = true
+transparent_bg = true
+handle_input_locally = false
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = ExtResource( 1 )
+
+[node name="TextureRect" type="TextureRect" parent="."]
+material = SubResource( 2 )
+margin_right = 40.0
+margin_bottom = 40.0
+texture = ExtResource( 2 )
+
+[node name="Camera" type="Camera" parent="."]
+environment = ExtResource( 1 )
+current = true

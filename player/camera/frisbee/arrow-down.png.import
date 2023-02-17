@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/crosshair-corners.png-0cdc5b0f9723c76502ce7c60bf9650fd.stex"
+path="res://.import/arrow-down.png-564384108754c01a328c28c5b284dff8.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://player/camera/crosshair-corners.png"
-dest_files=[ "res://.import/crosshair-corners.png-0cdc5b0f9723c76502ce7c60bf9650fd.stex" ]
+source_file="res://player/camera/frisbee/arrow-down.png"
+dest_files=[ "res://.import/arrow-down.png-564384108754c01a328c28c5b284dff8.stex" ]
 
 [params]
 

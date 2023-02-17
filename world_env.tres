@@ -9,12 +9,15 @@ radiance_size = 0
 panorama = SubResource( 6 )
 
 [resource]
-background_mode = 1
+background_mode = 4
 background_sky = SubResource( 5 )
 background_color = Color( 1, 1, 1, 1 )
 ambient_light_color = Color( 1, 1, 1, 1 )
+ambient_light_energy = 3.94
+ambient_light_sky_contribution = 0.0
 fog_enabled = true
-fog_color = Color( 1, 1, 1, 1 )
-fog_sun_color = Color( 1, 1, 1, 1 )
-fog_depth_end = 200.0
-fog_depth_curve = 4.0
+fog_color = Color( 0.709804, 0.337255, 0.564706, 1 )
+fog_sun_color = Color( 0.941176, 0.458824, 0.156863, 1 )
+fog_depth_end = 50.0
+glow_strength = 0.5
+glow_bloom = 0.5
