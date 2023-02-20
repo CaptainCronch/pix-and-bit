@@ -24,7 +24,8 @@ var current_throw : int = throw.STRAIGHT
 var speed := base_speed
 var player : KinematicBody
 var returning := false
-var active := true
+var active := false
+var can_disable := false
 
 var _turning := true
 var _horizontal_speed := 0.0
@@ -53,6 +54,10 @@ func _ready():
 			rotation_degrees.z = 45
 		_:
 			pass
+	
+	# disable buffer
+	yield(get_tree().create_timer(0.2), "timeout")
+	can_disable = true
 
 
 func _physics_process(delta):
@@ -76,28 +81,12 @@ func _physics_process(delta):
 		_:
 			pass
 	
-	if _horizontal_speed <= disable_speed and active:
+	if _horizontal_speed <= disable_speed:
 		disable()
-	
-#	if returning:
-#		#add_central_force(global_translation.direction_to(player.global_translation + Vector3.UP) * return_speed)
-#		global_translation = lerp(global_translation, player.global_translation + Vector3.UP, return_speed)
-#		rotation += Vector3(1, 0, 1) * spin_speed * delta
-
-
-#func back():
-#	disable()
-#	active = true
-#	_collection.monitoring = true
-#	$InactiveCollider.disabled = true
-#	gravity_scale = 0
-#	returning = true
-#
-#	player.frisbees_out.pop_at(player.frisbees_out.find(self))
 
 
 func disable():
-	if not active: return
+	if not active or not can_disable: return
 	
 	$SelfDestruct.start()
 	active = false
@@ -114,13 +103,11 @@ func disable():
 
 
 func _on_body_entered(body):
-	if not body.get_collision_layer_bit(0): return
+	if not body.get_collision_layer_bit(0) or body.get_collision_layer_bit(5): return
 	if current_throw == throw.TOMAHAWK: disable()
 	elif current_throw == throw.RIGHT or current_throw == throw.LEFT:
 		if _horizontal_speed <= (disable_speed) and active:
 			disable() 
-#	if Vector2(linear_velocity.x, linear_velocity.z).length() <= disable_speed:
-#		$SelfDestruct.start($SelfDestruct.time_left / 2)
 
 
 func _on_damage_area_entered(area):

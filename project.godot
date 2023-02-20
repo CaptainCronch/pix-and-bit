@@ -84,6 +84,11 @@ config/name="Pix and Bit"
 run/main_scene="res://scenes/test/test.tscn"
 config/icon="res://icon.png"
 
+[discord_presence]
+
+second_button/label="My Games"
+second_button/url="https://captcronch.itch.io"
+
 [display]
 
 window/size/width=400

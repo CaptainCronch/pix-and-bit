@@ -101,15 +101,12 @@ func _process(delta):
 	_frisbee_limit_direction = _head.global_translation.direction_to(
 			_end.global_translation)
 	
-	if Input.is_action_just_pressed("menu"):
-		get_tree().quit() # temporary for testing
+	get_input()
 
 
 func _physics_process(delta):
-	get_input()
 	jumping(delta)
 	apply_movement()
-	check_collisions()
 	model_controls(delta)
 
 
@@ -133,6 +130,9 @@ func get_input():
 		shoot_frisbee()
 	if Input.is_action_pressed("action") and aiming:
 		shoot_direction()
+	
+	if Input.is_action_just_pressed("menu"):
+		get_tree().quit() # temporary for testing
 
 
 func hold_frisbee():
@@ -178,23 +178,26 @@ func shoot_frisbee():
 		_reload_timer.start(reload_time)
 		var new_frisbee := frisbee.instance()
 		
-		if (_angle_movement.length() >= ignore_distance): # ignore short swings
-			if _shoot_angle >= 60 and _shoot_angle <= 120: # issue with 0
+		match _aim_dir_general:
+			DOWN:
 				new_frisbee.current_throw = new_frisbee.throw.ROLL
 				new_frisbee.speed = new_frisbee.roll_speed
-			elif _shoot_angle >= 240 and _shoot_angle <= 300: # top 45 degrees
+			UP:
 				new_frisbee.current_throw = new_frisbee.throw.TOMAHAWK
 				new_frisbee.speed = new_frisbee.tomahawk_speed
-			elif _shoot_angle > 120 and _shoot_angle < 240: # left 120 degrees
+			LEFT:
 				new_frisbee.current_throw = new_frisbee.throw.LEFT
 				new_frisbee.speed = new_frisbee.angled_speed
-			else: # should be 60 > angle > 300, right 120 degrees
+			RIGHT:
 				new_frisbee.current_throw = new_frisbee.throw.RIGHT
 				new_frisbee.speed = new_frisbee.angled_speed
+			NONE:
+				new_frisbee.current_throw = new_frisbee.throw.STRAIGHT
+				new_frisbee.speed = new_frisbee.base_speed
 		
 		get_tree().get_root().get_child(
 				get_tree().get_root().get_child_count() - 1
-				).add_child(new_frisbee) # always add child to the last child of the root node
+				).add_child(new_frisbee) # always add child to the last child of the root node (to skip autoloads)
 		
 		new_frisbee.player = self
 		new_frisbee.global_translation = _hand.global_translation
@@ -202,6 +205,9 @@ func shoot_frisbee():
 		
 		#new_frisbee.linear_velocity = Vector3(_velocity.x / 3, 0, _velocity.z / 3) # 1/3 of player's velocity is inherited
 		new_frisbee.apply_central_impulse(_shoot_direction * new_frisbee.speed)
+		new_frisbee.active = true
+		
+		_aim_dir_general = NONE
 
 
 func jumping(delta):
@@ -256,22 +262,16 @@ func apply_movement():
 	_velocity = move_and_slide_with_snap(_velocity, _snap_vector, Vector3.UP, true)
 
 
-func check_collisions():
-#	if frisbees_returning.size() <= 0: return
-#	if _return_area.overlaps_area(frisbees_returning[0].get_node("Damage")):
-#		frisbees_left += 1
-#		var _frisbee_to_delete : RigidBody = frisbees_returning.pop_front()
-#		frisbees_out.pop_front()
-#		_frisbee_to_delete.queue_free()
-	pass
-
-
 func model_controls(delta):
 	if _move_dir != Vector3.ZERO:
 		_model_holder.rotation.y = lerp_angle(_model_holder.rotation.y, atan2(_move_dir.x, _move_dir.z) + PI, turn_acceleration)
 	
 	if aiming:
 		_model_holder.rotation.y = lerp_angle(_model_holder.rotation.y, _spring_arm.rotation.y, aim_acceleration)
+
+
+func ui_controls():
+	pass
 
 
 func _input(event):

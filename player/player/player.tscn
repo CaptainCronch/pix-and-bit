@@ -11,8 +11,8 @@
 [ext_resource path="res://player/camera/frisbee/arrow-down.png" type="Texture" id=9]
 
 [sub_resource type="CylinderShape" id=3]
-height = 1.5
-radius = 0.5
+height = 1.15
+radius = 0.3
 
 [sub_resource type="Animation" id=4]
 length = 0.001
@@ -370,8 +370,8 @@ tracks/1/keys = {
 }
 
 [sub_resource type="CylinderShape" id=1]
-height = 1.0
-radius = 0.3
+height = 0.75
+radius = 0.15
 
 [node name="Pix" type="KinematicBody"]
 collision_layer = 2
@@ -383,7 +383,7 @@ __meta__ = {
 camera_offset = Vector3( 0, 2.5, 0 )
 
 [node name="Collider" type="CollisionShape" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0 )
 shape = SubResource( 3 )
 
 [node name="SpringArm" type="SpringArm" parent="."]

@@ -1,6 +1,6 @@
 extends SpringArm
 
-export var mouse_sensitivity := 0.1
+export var mouse_sensitivity := 0.15
 export var zoom_sensitivity := 1
 export var camera_acceleration := 1
 export var aim_speed := 0.1
