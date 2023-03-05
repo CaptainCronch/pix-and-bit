@@ -1,8 +1,0 @@
-res://default_env.tres
-res://scenes/test/test.tscn
-res://player/player/player.gd
-res://player/player/player.tscn
-res://player/weapons/frisbee/frisbee.gd
-res://player/camera/spring_arm.gd
-res://world_env_cheap.tres
-res://world_env.tres
