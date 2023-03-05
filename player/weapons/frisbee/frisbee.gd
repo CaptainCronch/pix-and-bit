@@ -1,16 +1,16 @@
-extends RigidBody
+extends RigidBody3D
 
-export var base_speed := 15
-export var tomahawk_speed := 20
-export var roll_speed := 30
-export var angled_speed := 20
-export var damage := 1
-export var disable_speed := 3
-export var spin_speed := 20
-export var curve_speed := 10
-export var return_speed := 0.15
-export var return_time := 1
-export var roll_deceleration = 0.1
+var base_speed := 15
+var tomahawk_speed := 20
+var roll_speed := 30
+var angled_speed := 20
+var damage := 1
+var disable_speed := 3
+var spin_speed := 20
+var curve_speed := 10
+var return_speed := 0.15
+var return_time := 1
+var roll_deceleration = 0.1
 
 enum throw {
 	STRAIGHT,
@@ -22,7 +22,7 @@ enum throw {
 
 var current_throw : int = throw.STRAIGHT
 var speed := base_speed
-var player : KinematicBody
+var player : CharacterBody3D
 var returning := false
 var active := false
 var can_disable := false
@@ -30,8 +30,8 @@ var can_disable := false
 var _turning := true
 var _horizontal_speed := 0.0
 
-onready var _model : CSGCylinder = $Model
-onready var _damage_area : Area = $Damage
+@onready var _model : CSGCylinder3D = $Model
+@onready var _damage_area : Area3D = $Damage
 
 
 func _ready():
@@ -56,7 +56,7 @@ func _ready():
 			pass
 	
 	# disable buffer
-	yield(get_tree().create_timer(0.2), "timeout")
+	await get_tree().create_timer(0.2).timeout
 	can_disable = true
 
 
@@ -75,9 +75,9 @@ func _physics_process(delta):
 		throw.ROLL:
 			pass
 		throw.RIGHT:
-			if active and _turning: add_central_force(Vector3(curve_speed, 0, 0).rotated(Vector3.UP, rotation.y))
+			if active and _turning: apply_central_force(Vector3(curve_speed, 0, 0).rotated(Vector3.UP, rotation.y))
 		throw.LEFT:
-			if active and _turning: add_central_force(Vector3(-curve_speed, 0, 0).rotated(Vector3.UP, rotation.y))
+			if active and _turning: apply_central_force(Vector3(-curve_speed, 0, 0).rotated(Vector3.UP, rotation.y))
 		_:
 			pass
 	
@@ -103,7 +103,7 @@ func disable():
 
 
 func _on_body_entered(body):
-	if not body.get_collision_layer_bit(0) or body.get_collision_layer_bit(5): return
+	if not body.get_collision_layer_value(0) or body.get_collision_layer_value(5): return
 	if current_throw == throw.TOMAHAWK: disable()
 	elif current_throw == throw.RIGHT or current_throw == throw.LEFT:
 		if _horizontal_speed <= (disable_speed) and active:

@@ -2,14 +2,18 @@
 
 importer="mp3"
 type="AudioStreamMP3"
-path="res://.import/victory.mp3-0a36ab6785e0490a8089e4683b96e663.mp3str"
+uid="uid://cgob6dvlm5g1d"
+path="res://.godot/imported/victory.mp3-0a36ab6785e0490a8089e4683b96e663.mp3str"
 
 [deps]
 
 source_file="res://scenes/test/victory.mp3"
-dest_files=[ "res://.import/victory.mp3-0a36ab6785e0490a8089e4683b96e663.mp3str" ]
+dest_files=["res://.godot/imported/victory.mp3-0a36ab6785e0490a8089e4683b96e663.mp3str"]
 
 [params]
 
 loop=false
 loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

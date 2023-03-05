@@ -1,29 +1,27 @@
-extends SpringArm
+extends SpringArm3D
 
-export var mouse_sensitivity := 0.15
-export var zoom_sensitivity := 1
-export var camera_acceleration := 1
-export var aim_speed := 0.1
+var mouse_sensitivity := 0.15
+var zoom_sensitivity := 1
+var camera_acceleration := 1
+var aim_speed := 0.1
 
-export var max_aim_zoom := 1.0
-export var min_zoom := 4
-export var max_zoom := 5
-export var max_offset := 3
-export var min_offset := 1
+var max_aim_zoom := 1.0
+var min_zoom := 4
+var max_zoom := 5
+var max_offset := 3
+var min_offset := 1
 
 var _current_aim_zoom := 0.0
 
-onready var _player : KinematicBody = $".."
-onready var _camera : Camera = $CameraHolder/Camera
-onready var _camera_holder : Spatial = $CameraHolder
+@onready var _player : CharacterBody3D = $".."
+@onready var _camera : Camera3D = $CameraHolder/Camera3D
+@onready var _camera_holder : Node3D = $CameraHolder
 
 var aim_zoom := _current_aim_zoom
 
 
 func _ready():
-	set_as_toplevel(true)
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-	_camera.set_as_toplevel(true)
 
 
 func _input(event):
@@ -43,7 +41,7 @@ func _process(delta):
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	
 	if Input.is_action_just_pressed("fullscreen"):
-		OS.window_fullscreen = !OS.window_fullscreen
+		get_window().mode = Window.MODE_EXCLUSIVE_FULLSCREEN if (!((get_window().mode == Window.MODE_EXCLUSIVE_FULLSCREEN) or (get_window().mode == Window.MODE_FULLSCREEN))) else Window.MODE_WINDOWED
 	
 	_current_aim_zoom = lerp(_current_aim_zoom, aim_zoom, aim_speed)
 	
@@ -56,7 +54,7 @@ func _process(delta):
 			clamp(inverse_lerp(70.0, -30.0, rotation_degrees.x), 0, 1))
 	
 	var aim_offset = Vector3(_current_aim_zoom, 0, 0).rotated(Vector3.UP, rotation.y)
-	_camera.global_translation = lerp(_camera.global_translation + aim_offset,
-			_camera_holder.global_translation + aim_offset, camera_acceleration)
+	_camera.global_position = lerp(_camera.global_position + aim_offset,
+			_camera_holder.global_position + aim_offset, camera_acceleration)
 	
 	_camera.rotation = rotation

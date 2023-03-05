@@ -1,34 +1,34 @@
-extends KinematicBody
+extends CharacterBody3D
 
-export var move_speed := 10.0
-export var jump_force := 26.0
+var move_speed := 10.0
+var jump_force := 26.0
 
-export var base_gravity := 70.0
-export var fall_gravity := 80.0
-export var hold_gravity := 70.0
-export var hold_range := 10.0
-export var max_fall_speed := -75.0
+var base_gravity := 70.0
+var fall_gravity := 80.0
+var hold_gravity := 70.0
+var hold_range := 10.0
+var max_fall_speed := -75.0
 
-export var base_acceleration := 0.1
-export var base_friction := 0.3
-export var air_acceleration := 0.1
-export var air_friction := 0.1
-export var turn_acceleration := 0.1
-export var aim_acceleration := 0.2
+var base_acceleration := 0.1
+var base_friction := 0.3
+var air_acceleration := 0.1
+var air_friction := 0.1
+var turn_acceleration := 0.1
+var aim_acceleration := 0.2
 
-export var buffer_time := 0.1
-export var coyote_time := 0.2
-export var snap_distance := Vector3(0, 0.2, 0)
+var buffer_time := 0.1
+var coyote_time := 0.2
+var base_snap := 0.2
 
-export var base_health := 5
+var base_health := 5
 
-export var camera_offset := Vector3.ZERO
-export var camera_frisbee_max := Vector3(0, 0, -20)
-export var camera_frisbee_min := Vector3(0, 0, -4)
-export var frisbee_hold_time := 0.3
-export var ignore_distance := 100
-export var max_frisbees := 2
-export var reload_time := 1
+var camera_offset := Vector3.ZERO
+var camera_frisbee_max := Vector3(0, 0, -20)
+var camera_frisbee_min := Vector3(0, 0, -4)
+var frisbee_hold_time := 0.3
+var ignore_distance := 100
+var max_frisbees := 2
+var reload_time := 1
 
 
 enum {
@@ -41,7 +41,7 @@ enum {
 
 
 var _velocity := Vector3.ZERO
-var _snap_vector := snap_distance
+var _current_snap := base_snap
 var _move_dir := Vector3.ZERO
 var _grounded := false
 var _gravity := base_gravity
@@ -60,46 +60,46 @@ var _shoot_angle := 0
 var _aim_dir_general := NONE
 
 
-onready var _spring_arm : SpringArm = $SpringArm
-onready var _camera : Camera = $SpringArm/CameraHolder/Camera
-onready var _buffer_timer : Timer = $JumpBuffer
-onready var _coyote_timer : Timer = $CoyoteTime
+@onready var _spring_arm : SpringArm3D = $SpringArm3D
+@onready var _camera : Camera3D = $SpringArm3D/CameraHolder/Camera3D
+@onready var _buffer_timer : Timer = $JumpBuffer
+@onready var _coyote_timer : Timer = $CoyoteTime
 
-onready var _head : Spatial = $ModelHolder/Model/Body/Head
-onready var _left_wrist : Spatial = $ModelHolder/Model/Body/LeftWrist
-onready var _right_wrist : Spatial = $ModelHolder/Model/Body/RightWrist
-onready var _hand : Spatial = $ModelHolder/Model/Body/Hand
-onready var _frisbee_ray : RayCast = $SpringArm/CameraHolder/Camera/RayCast
-onready var _end : Position3D = $SpringArm/CameraHolder/Camera/RayCast/End
-onready var _start : Position3D = $SpringArm/CameraHolder/Camera/RayCast/Start
-onready var _reload_timer : Timer = $Reload
+@onready var _head : Node3D = $ModelHolder/Model/Body/Head
+@onready var _left_wrist : Node3D = $ModelHolder/Model/Body/LeftWrist
+@onready var _right_wrist : Node3D = $ModelHolder/Model/Body/RightWrist
+@onready var _hand : Node3D = $ModelHolder/Model/Body/Hand
+@onready var _frisbee_ray : RayCast3D = $SpringArm3D/CameraHolder/Camera3D/RayCast3D
+@onready var _end : Marker3D = $SpringArm3D/CameraHolder/Camera3D/RayCast3D/End
+@onready var _start : Marker3D = $SpringArm3D/CameraHolder/Camera3D/RayCast3D/Start
+@onready var _reload_timer : Timer = $Reload
 
-onready var _right_ring : CSGCylinder = $ModelHolder/RightRing
-onready var _left_ring : CSGCylinder = $ModelHolder/LeftRing
-onready var _model_holder : Spatial = $ModelHolder
-onready var _frisbee_anim : AnimationPlayer = $SpringArm/CameraHolder/Camera/CenterContainer/Crosshair/FrisbeeAnim
-onready var _crosshair_anim : AnimationPlayer = $SpringArm/CameraHolder/Camera/CenterContainer/Crosshair/CrosshairAnim
-onready var _right_arrow : TextureRect = $SpringArm/CameraHolder/Camera/CenterContainer/Crosshair/Right
-onready var _left_arrow : TextureRect = $SpringArm/CameraHolder/Camera/CenterContainer/Crosshair/Left
-onready var _down_arrow : TextureRect = $SpringArm/CameraHolder/Camera/CenterContainer/Crosshair/Down
-onready var _up_arrow : TextureRect = $SpringArm/CameraHolder/Camera/CenterContainer/Crosshair/Up
+@onready var _right_ring : CSGCylinder3D = $ModelHolder/RightRing
+@onready var _left_ring : CSGCylinder3D = $ModelHolder/LeftRing
+@onready var _model_holder : Node3D = $ModelHolder
+@onready var _frisbee_anim : AnimationPlayer = $SpringArm3D/CameraHolder/Camera3D/CenterContainer/Crosshair/FrisbeeAnim
+@onready var _crosshair_anim : AnimationPlayer = $SpringArm3D/CameraHolder/Camera3D/CenterContainer/Crosshair/CrosshairAnim
+@onready var _right_arrow : TextureRect = $SpringArm3D/CameraHolder/Camera3D/CenterContainer/Crosshair/Right
+@onready var _left_arrow : TextureRect = $SpringArm3D/CameraHolder/Camera3D/CenterContainer/Crosshair/Left
+@onready var _down_arrow : TextureRect = $SpringArm3D/CameraHolder/Camera3D/CenterContainer/Crosshair/Down
+@onready var _up_arrow : TextureRect = $SpringArm3D/CameraHolder/Camera3D/CenterContainer/Crosshair/Up
 
 
 var frisbee := preload("res://player/weapons/frisbee/frisbee.tscn")
 
 
 func _ready():
-	_frisbee_ray.cast_to = camera_frisbee_max
-	_end.translation = camera_frisbee_max
-	_start.translation = camera_frisbee_min
+	_frisbee_ray.target_position = camera_frisbee_max
+	_end.position = camera_frisbee_max
+	_start.position = camera_frisbee_min
 
 
 func _process(delta):
-	_spring_arm.translation = translation + camera_offset
+	_spring_arm.position = position + camera_offset
 	_head.rotation = _spring_arm.rotation
 	
-	_frisbee_limit_direction = _head.global_translation.direction_to(
-			_end.global_translation)
+	_frisbee_limit_direction = _head.global_position.direction_to(
+			_end.global_position)
 	
 	get_input()
 
@@ -113,8 +113,8 @@ func _physics_process(delta):
 func get_input():
 	_move_dir = Vector3.ZERO
 	
-	_move_dir.x = Input.get_action_strength("right") - Input.get_action_strength("left")
-	_move_dir.z = Input.get_action_strength("back") - Input.get_action_strength("forward")
+	_move_dir.x = Input.get_axis("left", "right")
+	_move_dir.z = Input.get_axis("forward", "back")
 	_move_dir = _move_dir.rotated(Vector3.UP, _spring_arm.rotation.y).normalized()
 	
 	if Input.is_action_just_pressed("action_secondary"):
@@ -151,12 +151,12 @@ func hold_frisbee():
 	
 	if not _frisbee_ray.is_colliding(): return
 	
-	if _head.global_translation.distance_to(_frisbee_ray.get_collision_point()) >= camera_frisbee_min.z:
-		_shoot_direction = _head.global_translation.direction_to(
+	if _head.global_position.distance_to(_frisbee_ray.get_collision_point()) >= camera_frisbee_min.z:
+		_shoot_direction = _head.global_position.direction_to(
 				_frisbee_ray.get_collision_point()) # aim towards where crosshair hits surface
 	else:
-		_shoot_direction = _head.global_translation.direction_to(
-				_start.global_translation) # if too close pretend only min away
+		_shoot_direction = _head.global_position.direction_to(
+				_start.global_position) # if too close pretend only min away
 
 
 func shoot_direction():
@@ -176,7 +176,7 @@ func shoot_frisbee():
 	if frisbees_left > 0:
 		frisbees_left -= 1
 		_reload_timer.start(reload_time)
-		var new_frisbee := frisbee.instance()
+		var new_frisbee := frisbee.instantiate()
 		
 		match _aim_dir_general:
 			DOWN:
@@ -200,7 +200,7 @@ func shoot_frisbee():
 				).add_child(new_frisbee) # always add child to the last child of the root node (to skip autoloads)
 		
 		new_frisbee.player = self
-		new_frisbee.global_translation = _hand.global_translation
+		new_frisbee.global_position = _hand.global_position
 		new_frisbee.rotation.y = _head.rotation.y
 		
 		#new_frisbee.linear_velocity = Vector3(_velocity.x / 3, 0, _velocity.z / 3) # 1/3 of player's velocity is inherited
@@ -223,19 +223,19 @@ func jumping(delta):
 	if _grounded:
 		_coyote_timer.start(coyote_time) # starts letting you jump
 	
-	var touched_ground = _grounded and _snap_vector == Vector3.ZERO # resets to ground mode
+	var touched_ground = _grounded and _current_snap == 0.0 # resets to ground mode
 	
 	if Input.is_action_just_pressed("jump"):
 		_buffer_timer.start(buffer_time) # waits until you touch the ground to jump
 	
 	if not _coyote_timer.is_stopped() and not _buffer_timer.is_stopped():
 		_velocity.y = jump_force
-		_snap_vector = Vector3.ZERO
+		_current_snap = 0.0
 		_buffer_timer.stop()
 		_coyote_timer.stop()
 	
 	if touched_ground:
-		_snap_vector = snap_distance
+		_current_snap = base_snap
 	
 	if not Input.is_action_pressed("jump") and _velocity.y > jump_force * 0.5:
 		_velocity.y = jump_force * 0.5 # jump cut when you let go of jump
@@ -252,14 +252,19 @@ func apply_movement():
 	if _move_dir.x != 0:
 		_velocity.x = lerp(_velocity.x, _move_dir.x * move_speed, _acceleration)
 	else:
-		_velocity.x = lerp(_velocity.x, 0, _friction)
+		_velocity.x = lerp(_velocity.x, 0.0, _friction)
 	
 	if _move_dir.z != 0:
 		_velocity.z = lerp(_velocity.z, _move_dir.z * move_speed, _acceleration)
 	else:
-		_velocity.z = lerp(_velocity.z, 0, _friction)
+		_velocity.z = lerp(_velocity.z, 0.0, _friction)
 	
-	_velocity = move_and_slide_with_snap(_velocity, _snap_vector, Vector3.UP, true)
+	set_velocity(_velocity)
+	# TODOConverter40 looks that snap in Godot 4.0 is float, not vector like in Godot 3 - previous value `e`
+	set_up_direction(Vector3.UP)
+	set_floor_stop_on_slope_enabled(true)
+	move_and_slide()
+	_velocity = velocity
 
 
 func model_controls(delta):
@@ -277,7 +282,7 @@ func ui_controls():
 func _input(event):
 	if event is InputEventMouseMotion and aiming:
 		_angle_movement += Vector2(event.relative.x, -event.relative.y)
-		_shoot_angle = wrapf(rad2deg(_angle_movement.angle()), 0, 360)
+		_shoot_angle = wrapf(rad_to_deg(_angle_movement.angle()), 0, 360)
 
 
 func _on_damage_area_entered(area):

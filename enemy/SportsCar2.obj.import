@@ -1,20 +1,21 @@
 [remap]
 
 importer="wavefront_obj"
+importer_version=1
 type="Mesh"
-path="res://.import/SportsCar2.obj-2046a998c17e9480babdf468b036f5cd.mesh"
+uid="uid://ctdlpiq6b62fx"
+path="res://.godot/imported/SportsCar2.obj-2046a998c17e9480babdf468b036f5cd.mesh"
 
 [deps]
 
-files=[ "res://.import/SportsCar2.obj-2046a998c17e9480babdf468b036f5cd.mesh" ]
+files=["res://.godot/imported/SportsCar2.obj-2046a998c17e9480babdf468b036f5cd.mesh"]
 
 source_file="res://enemy/SportsCar2.obj"
-dest_files=[ "res://.import/SportsCar2.obj-2046a998c17e9480babdf468b036f5cd.mesh", "res://.import/SportsCar2.obj-2046a998c17e9480babdf468b036f5cd.mesh" ]
+dest_files=["res://.godot/imported/SportsCar2.obj-2046a998c17e9480babdf468b036f5cd.mesh", "res://.godot/imported/SportsCar2.obj-2046a998c17e9480babdf468b036f5cd.mesh"]
 
 [params]
 
 generate_tangents=true
-scale_mesh=Vector3( 1, 1, 1 )
-offset_mesh=Vector3( 0, 0, 0 )
-octahedral_compression=true
-optimize_mesh_flags=4286
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+optimize_mesh=true

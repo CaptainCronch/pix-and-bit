@@ -3,7 +3,7 @@
 [sub_resource type="ViewportTexture" id=1]
 viewport_path = NodePath(".")
 
-[sub_resource type="PanoramaSky" id=2]
+[sub_resource type="Sky" id=2]
 resource_local_to_scene = true
 panorama = SubResource( 1 )
 

@@ -1,1 +1,1 @@
-extends KinematicBody
+extends CharacterBody3D

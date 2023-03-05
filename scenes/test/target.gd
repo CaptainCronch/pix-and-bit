@@ -1,6 +1,6 @@
-extends CSGCombiner
+extends CSGCombiner3D
 
 
 func _on_area_entered(area):
-	$CSGTorus/Particles.emitting = true
+	$CSGTorus3D/Particles.emitting = true
 	$AudioStreamPlayer3D.play()
