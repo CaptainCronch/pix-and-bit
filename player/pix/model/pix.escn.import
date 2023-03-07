@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://cobh6tfvib4tj"
-path="res://.godot/imported/pix.fbx-136f94dda0104f95433ca9ce96480683.scn"
+uid="uid://dynuor1q0nurg"
+path="res://.godot/imported/pix.escn-7e7229bedb7fcc078dc48d15d7104bb6.scn"
 
 [deps]
 
-source_file="res://player/player/model/pix.fbx"
-dest_files=["res://.godot/imported/pix.fbx-136f94dda0104f95433ca9ce96480683.scn"]
+source_file="res://player/pix/model/pix.escn"
+dest_files=["res://.godot/imported/pix.escn-7e7229bedb7fcc078dc48d15d7104bb6.scn"]
 
 [params]
 
@@ -20,11 +20,11 @@ nodes/root_scale=1.0
 meshes/ensure_tangents=true
 meshes/generate_lods=true
 meshes/create_shadow_meshes=true
-meshes/light_baking=0
-meshes/lightmap_texel_size=0.1
+meshes/light_baking=1
+meshes/lightmap_texel_size=0.2
 skins/use_named_skins=true
 animation/import=true
-animation/fps=15
+animation/fps=30
 animation/trimming=false
 animation/remove_immutable_tracks=true
 import_script/path=""

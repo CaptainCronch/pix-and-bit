@@ -1,19 +1,26 @@
-[gd_resource type="Environment" load_steps=2 format=3 uid="uid://chaa1346kgklm"]
+[gd_resource type="Environment" load_steps=2 format=3 uid="uid://d17vn2ygj254p"]
 
-[sub_resource type="Sky" id="1"]
+[sub_resource type="Sky" id="Sky_7kt60"]
+radiance_size = 2
 
 [resource]
 background_mode = 2
 background_color = Color(0.588235, 1, 0.866667, 1)
-sky = SubResource("1")
-ambient_light_color = Color(0.858824, 0.784314, 1, 1)
+sky = SubResource("Sky_7kt60")
+ambient_light_color = Color(0.513726, 0.458824, 0.619608, 1)
 ambient_light_sky_contribution = 0.0
+ambient_light_energy = 2.0
 glow_enabled = true
+glow_normalized = true
 glow_intensity = 8.0
 glow_strength = 0.75
 glow_bloom = 0.2
 fog_enabled = true
+fog_light_color = Color(0.588235, 0.8, 0.85098, 1)
+fog_light_energy = 2.0
+fog_sun_scatter = 1.0
+fog_density = 0.001
 adjustment_enabled = true
 adjustment_brightness = 1.15
 adjustment_contrast = 1.15
-adjustment_saturation = 2.0
+adjustment_saturation = 1.15

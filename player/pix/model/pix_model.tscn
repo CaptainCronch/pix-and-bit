@@ -1,0 +1,38 @@
+[gd_scene load_steps=9 format=3 uid="uid://dk8ls2ted1g30"]
+
+[ext_resource type="PackedScene" uid="uid://n3lq5wvw4t2m" path="res://player/pix/model/pix.gltf" id="1_s6k4x"]
+[ext_resource type="Texture2D" uid="uid://c8mo2bg4q27jd" path="res://player/pix/model/eyelid.tres" id="2_hp0dd"]
+[ext_resource type="Shader" uid="uid://cnh5xrmrm385p" path="res://player/pix/model/eye_shader.tres" id="2_pcqxq"]
+[ext_resource type="Texture2D" uid="uid://cu2ri6low863r" path="res://player/pix/model/iris.tres" id="3_4rerb"]
+[ext_resource type="Shader" uid="uid://2xtttp3f8cbu" path="res://player/pix/model/gem_shader.tres" id="5_n5emm"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_thabb"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("2_pcqxq")
+shader_parameter/eye_position = Vector2(0, 0)
+shader_parameter/eyelid_texture = ExtResource("2_hp0dd")
+shader_parameter/iris_texture = ExtResource("3_4rerb")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_mkjgl"]
+render_priority = 0
+shader = ExtResource("5_n5emm")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_aqicp"]
+render_priority = 0
+shader = ExtResource("2_pcqxq")
+shader_parameter/eye_position = null
+shader_parameter/eyelid_texture = ExtResource("2_hp0dd")
+shader_parameter/iris_texture = ExtResource("3_4rerb")
+
+[node name="pix" instance=ExtResource("1_s6k4x")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
+
+[node name="Skeleton3D" parent="pixArmature" index="0"]
+bones/1/position = Vector3(0.000474975, 0.335475, -0.030525)
+
+[node name="pix2" parent="pixArmature/Skeleton3D" index="0"]
+gi_mode = 2
+surface_material_override/0 = SubResource("ShaderMaterial_thabb")
+surface_material_override/2 = SubResource("ShaderMaterial_mkjgl")
+surface_material_override/3 = SubResource("ShaderMaterial_aqicp")

@@ -1,10 +1,10 @@
 [gd_scene load_steps=8 format=3 uid="uid://bg476b6funlka"]
 
-[ext_resource type="Environment" uid="uid://deu0pjqwqkt2p" path="res://world_env_cheap.tres" id="1"]
+[ext_resource type="Environment" uid="uid://d17vn2ygj254p" path="res://world_env.tres" id="1_gq6md"]
 [ext_resource type="PackedScene" path="res://enemy/enemy.tscn" id="2"]
-[ext_resource type="PackedScene" uid="uid://5v31duntgusd" path="res://player/player/player.tscn" id="3"]
-[ext_resource type="PackedScene" path="res://scenes/test/target.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://bsj7auu8gm34l" path="res://scenes/test/target.tscn" id="4"]
 [ext_resource type="Material" path="res://scenes/test/test_black.tres" id="5"]
+[ext_resource type="PackedScene" uid="uid://ds0sb1s52i5r3" path="res://player/pix/player.tscn" id="5_hfq8l"]
 [ext_resource type="Texture2D" uid="uid://1vis126su0ah" path="res://scenes/test/texture_01.png" id="6"]
 
 [sub_resource type="StandardMaterial3D" id="1"]
@@ -17,17 +17,13 @@ uv1_triplanar = true
 [node name="Test" type="Node3D"]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = ExtResource("1")
+environment = ExtResource("1_gq6md")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 10.7693, 0)
-light_color = Color(0.25098, 0.25098, 0.219608, 1)
-light_energy = 5.0
-light_indirect_energy = 5.0
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 10, 0)
+light_energy = 2.5
 shadow_enabled = true
-shadow_bias = 0.01
-
-[node name="Player" parent="." instance=ExtResource("3")]
+shadow_normal_bias = 0.0
 
 [node name="Enemy" parent="." instance=ExtResource("2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0, 6)
@@ -103,3 +99,5 @@ collision_layer = 32
 [node name="CSGBox3D" type="CSGBox3D" parent="Level/Obstacles"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.4276, 8, -7.15318)
 size = Vector3(1, 16, 8)
+
+[node name="Pix" parent="." instance=ExtResource("5_hfq8l")]

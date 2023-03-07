@@ -204,7 +204,7 @@ func shoot_frisbee():
 		new_frisbee.rotation.y = _head.rotation.y
 		
 		#new_frisbee.linear_velocity = Vector3(_velocity.x / 3, 0, _velocity.z / 3) # 1/3 of player's velocity is inherited
-		new_frisbee.apply_central_impulse(_shoot_direction * new_frisbee.speed)
+		new_frisbee.apply_central_impulse(_shoot_direction * new_frisbee.speed * 2)
 		new_frisbee.active = true
 		
 		_aim_dir_general = NONE

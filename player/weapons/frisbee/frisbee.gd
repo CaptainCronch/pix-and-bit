@@ -103,7 +103,7 @@ func disable():
 
 
 func _on_body_entered(body):
-	if not body.get_collision_layer_value(0) or body.get_collision_layer_value(5): return
+	if not body.get_collision_layer_value(1) or body.get_collision_layer_value(6): return
 	if current_throw == throw.TOMAHAWK: disable()
 	elif current_throw == throw.RIGHT or current_throw == throw.LEFT:
 		if _horizontal_speed <= (disable_speed) and active:
