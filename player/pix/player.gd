@@ -58,6 +58,7 @@ var frisbees_left := max_frisbees
 
 var _shoot_angle := 0
 var _aim_dir_general := NONE
+var _last_dir := NONE
 
 
 @onready var _spring_arm : SpringArm3D = $SpringArm3D
@@ -79,10 +80,10 @@ var _aim_dir_general := NONE
 @onready var _model_holder : Node3D = $ModelHolder
 @onready var _frisbee_anim : AnimationPlayer = $SpringArm3D/CameraHolder/Camera3D/CenterContainer/Crosshair/FrisbeeAnim
 @onready var _crosshair_anim : AnimationPlayer = $SpringArm3D/CameraHolder/Camera3D/CenterContainer/Crosshair/CrosshairAnim
-@onready var _right_arrow : TextureRect = $SpringArm3D/CameraHolder/Camera3D/CenterContainer/Crosshair/Right
-@onready var _left_arrow : TextureRect = $SpringArm3D/CameraHolder/Camera3D/CenterContainer/Crosshair/Left
-@onready var _down_arrow : TextureRect = $SpringArm3D/CameraHolder/Camera3D/CenterContainer/Crosshair/Down
-@onready var _up_arrow : TextureRect = $SpringArm3D/CameraHolder/Camera3D/CenterContainer/Crosshair/Up
+@onready var _right_arrow : Sprite2D = $SpringArm3D/CameraHolder/Camera3D/CenterContainer/Crosshair/Right
+@onready var _left_arrow : Sprite2D = $SpringArm3D/CameraHolder/Camera3D/CenterContainer/Crosshair/Left
+@onready var _down_arrow : Sprite2D = $SpringArm3D/CameraHolder/Camera3D/CenterContainer/Crosshair/Down
+@onready var _up_arrow : Sprite2D = $SpringArm3D/CameraHolder/Camera3D/CenterContainer/Crosshair/Up
 
 
 var frisbee := preload("res://player/weapons/frisbee/frisbee.tscn")
@@ -113,25 +114,25 @@ func _physics_process(delta):
 func get_input():
 	_move_dir = Vector3.ZERO
 	
-	_move_dir.x = Input.get_axis("left", "right")
-	_move_dir.z = Input.get_axis("forward", "back")
+	_move_dir.x = Input.get_axis("pix_left", "pix_right")
+	_move_dir.z = Input.get_axis("pix_forward", "pix_back")
 	_move_dir = _move_dir.rotated(Vector3.UP, _spring_arm.rotation.y).normalized()
 	
-	if Input.is_action_just_pressed("action_secondary"):
+	if Input.is_action_just_pressed("pix_secondary"):
 		aiming = true
 		_spring_arm.aim_zoom = _spring_arm.max_aim_zoom
-	elif Input.is_action_just_released("action_secondary"):
+	elif Input.is_action_just_released("pix_secondary"):
 		aiming = false
 		_spring_arm.aim_zoom = 0
 	
-	if Input.is_action_just_pressed("action") and aiming:
+	if Input.is_action_just_pressed("pix_primary") and aiming:
 		hold_frisbee()
-	elif Input.is_action_just_released("action") and aiming:
+	elif Input.is_action_just_released("pix_primary") and aiming:
 		shoot_frisbee()
-	if Input.is_action_pressed("action") and aiming:
+	if Input.is_action_pressed("pix_primary") and aiming:
 		shoot_direction()
 	
-	if Input.is_action_just_pressed("menu"):
+	if Input.is_action_just_pressed("pix_menu"):
 		get_tree().quit() # temporary for testing
 
 
@@ -225,7 +226,7 @@ func jumping(delta):
 	
 	var touched_ground = _grounded and _current_snap == 0.0 # resets to ground mode
 	
-	if Input.is_action_just_pressed("jump"):
+	if Input.is_action_just_pressed("pix_jump"):
 		_buffer_timer.start(buffer_time) # waits until you touch the ground to jump
 	
 	if not _coyote_timer.is_stopped() and not _buffer_timer.is_stopped():
@@ -237,7 +238,7 @@ func jumping(delta):
 	if touched_ground:
 		_current_snap = base_snap
 	
-	if not Input.is_action_pressed("jump") and _velocity.y > jump_force * 0.5:
+	if not Input.is_action_pressed("pix_jump") and _velocity.y > jump_force * 0.5:
 		_velocity.y = jump_force * 0.5 # jump cut when you let go of jump
 
 
@@ -275,8 +276,11 @@ func model_controls(delta):
 		_model_holder.rotation.y = lerp_angle(_model_holder.rotation.y, _spring_arm.rotation.y, aim_acceleration)
 
 
-func ui_controls():
-	pass
+func ui_anim(direction):
+	if direction == _last_dir:
+		return
+	
+	
 
 
 func _input(event):

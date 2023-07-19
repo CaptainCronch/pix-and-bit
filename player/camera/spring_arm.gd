@@ -27,10 +27,7 @@ func _ready():
 func _input(event):
 	if event is InputEventMouseMotion: #and not _player.holding_frisbee
 		rotation_degrees.x -= event.relative.y * mouse_sensitivity
-		rotation_degrees.x = clamp(rotation_degrees.x, -89.0, 89.0)
-		
 		rotation_degrees.y -= event.relative.x * mouse_sensitivity
-		rotation_degrees.y = wrapf(rotation_degrees.y, 0.0, 360.0)
 
 
 func _process(delta):
@@ -58,3 +55,8 @@ func _process(delta):
 			_camera_holder.global_position + aim_offset, camera_acceleration)
 	
 	_camera.rotation = rotation
+
+
+func rotate_camera():
+	rotation_degrees.x = clamp(rotation_degrees.x, -89.0, 89.0)
+	rotation_degrees.y = wrapf(rotation_degrees.y, 0.0, 360.0)

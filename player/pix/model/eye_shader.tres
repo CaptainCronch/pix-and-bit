@@ -53,6 +53,8 @@ texture_type = 1
 
 [resource]
 code = "shader_type spatial;
+render_mode blend_mix, depth_draw_opaque, cull_back, diffuse_lambert, specular_schlick_ggx;
+
 uniform sampler2D eyelid_texture : source_color, repeat_disable;
 uniform vec2 eye_position;
 uniform sampler2D iris_texture : source_color, repeat_disable;

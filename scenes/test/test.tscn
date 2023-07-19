@@ -1,11 +1,12 @@
-[gd_scene load_steps=8 format=3 uid="uid://bg476b6funlka"]
+[gd_scene load_steps=9 format=3 uid="uid://bg476b6funlka"]
 
 [ext_resource type="Environment" uid="uid://d17vn2ygj254p" path="res://world_env.tres" id="1_gq6md"]
-[ext_resource type="PackedScene" path="res://enemy/enemy.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://ojph8q8s2i7y" path="res://enemy/enemy.tscn" id="2"]
 [ext_resource type="PackedScene" uid="uid://bsj7auu8gm34l" path="res://scenes/test/target.tscn" id="4"]
 [ext_resource type="Material" path="res://scenes/test/test_black.tres" id="5"]
-[ext_resource type="PackedScene" uid="uid://ds0sb1s52i5r3" path="res://player/pix/player.tscn" id="5_hfq8l"]
+[ext_resource type="PackedScene" uid="uid://ds0sb1s52i5r3" path="res://player/pix/pix.tscn" id="5_hfq8l"]
 [ext_resource type="Texture2D" uid="uid://1vis126su0ah" path="res://scenes/test/texture_01.png" id="6"]
+[ext_resource type="PackedScene" uid="uid://b6x6xfqsnexa4" path="res://player/bit/bit.tscn" id="7_xk45x"]
 
 [sub_resource type="StandardMaterial3D" id="1"]
 transparency = 1
@@ -101,3 +102,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.4276, 8, -7.15318)
 size = Vector3(1, 16, 8)
 
 [node name="Pix" parent="." instance=ExtResource("5_hfq8l")]
+
+[node name="Bit" parent="." instance=ExtResource("7_xk45x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.71381, 0, 0)

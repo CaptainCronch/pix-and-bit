@@ -1,17 +1,18 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=4 format=3 uid="uid://ojph8q8s2i7y"]
 
-[ext_resource path="res://enemy/SportsCar2.obj" type="ArrayMesh" id=1]
-[ext_resource path="res://enemy/enemy.gd" type="Script" id=2]
+[ext_resource type="ArrayMesh" uid="uid://ctdlpiq6b62fx" path="res://enemy/SportsCar2.obj" id="1"]
+[ext_resource type="Script" path="res://enemy/enemy.gd" id="2"]
 
-[sub_resource type="BoxShape3D" id=1]
-size = Vector3( 0.8, 0.6, 1.9 )
+[sub_resource type="BoxShape3D" id="1"]
+size = Vector3(0.8, 0.6, 1.9)
 
 [node name="Enemy" type="CharacterBody3D"]
-script = ExtResource( 2 )
+script = ExtResource("2")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-mesh = ExtResource( 1 )
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0)
+mesh = ExtResource("1")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.603809, 0 )
-shape = SubResource( 1 )
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.603809, 0)
+shape = SubResource("1")
