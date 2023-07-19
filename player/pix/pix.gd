@@ -25,6 +25,7 @@ var base_health := 5
 var camera_offset := Vector3.ZERO
 var camera_frisbee_max := Vector3(0, 0, -20)
 var camera_frisbee_min := Vector3(0, 0, -4)
+var analog_rotation := Vector2()
 var frisbee_hold_time := 0.3
 var ignore_distance := 100
 var max_frisbees := 2
@@ -62,7 +63,7 @@ var _last_dir := NONE
 
 
 @onready var _spring_arm : SpringArm3D = $SpringArm3D
-@onready var _camera : Camera3D = $SpringArm3D/CameraHolder/Camera3D
+@onready var camera_placeholder : Node3D = $SpringArm3D/CameraHolder/CameraPlaceholder
 @onready var _buffer_timer : Timer = $JumpBuffer
 @onready var _coyote_timer : Timer = $CoyoteTime
 
@@ -70,29 +71,41 @@ var _last_dir := NONE
 @onready var _left_wrist : Node3D = $ModelHolder/Model/Body/LeftWrist
 @onready var _right_wrist : Node3D = $ModelHolder/Model/Body/RightWrist
 @onready var _hand : Node3D = $ModelHolder/Model/Body/Hand
-@onready var _frisbee_ray : RayCast3D = $SpringArm3D/CameraHolder/Camera3D/RayCast3D
-@onready var _end : Marker3D = $SpringArm3D/CameraHolder/Camera3D/RayCast3D/End
-@onready var _start : Marker3D = $SpringArm3D/CameraHolder/Camera3D/RayCast3D/Start
+@onready var _frisbee_ray : RayCast3D = $SpringArm3D/CameraHolder/CameraPlaceholder/RayCast3D
+@onready var _end : Marker3D = $SpringArm3D/CameraHolder/CameraPlaceholder/RayCast3D/End
+@onready var _start : Marker3D = $SpringArm3D/CameraHolder/CameraPlaceholder/RayCast3D/Start
 @onready var _reload_timer : Timer = $Reload
 
 @onready var _right_ring : CSGCylinder3D = $ModelHolder/RightRing
 @onready var _left_ring : CSGCylinder3D = $ModelHolder/LeftRing
 @onready var _model_holder : Node3D = $ModelHolder
-@onready var _frisbee_anim : AnimationPlayer = $SpringArm3D/CameraHolder/Camera3D/CenterContainer/Crosshair/FrisbeeAnim
-@onready var _crosshair_anim : AnimationPlayer = $SpringArm3D/CameraHolder/Camera3D/CenterContainer/Crosshair/CrosshairAnim
-@onready var _right_arrow : Sprite2D = $SpringArm3D/CameraHolder/Camera3D/CenterContainer/Crosshair/Right
-@onready var _left_arrow : Sprite2D = $SpringArm3D/CameraHolder/Camera3D/CenterContainer/Crosshair/Left
-@onready var _down_arrow : Sprite2D = $SpringArm3D/CameraHolder/Camera3D/CenterContainer/Crosshair/Down
-@onready var _up_arrow : Sprite2D = $SpringArm3D/CameraHolder/Camera3D/CenterContainer/Crosshair/Up
+@onready var _frisbee_anim : AnimationPlayer
+@onready var _crosshair_anim : AnimationPlayer
+@onready var _right_arrow : Sprite2D
+@onready var _left_arrow : Sprite2D
+@onready var _down_arrow : Sprite2D
+@onready var _up_arrow : Sprite2D
 
 
 var frisbee := preload("res://player/weapons/frisbee/frisbee.tscn")
 
 
 func _ready():
+	Global.pix = self
 	_frisbee_ray.target_position = camera_frisbee_max
 	_end.position = camera_frisbee_max
 	_start.position = camera_frisbee_min
+	call_deferred("init")
+
+
+func init():
+	var ui = Global.pix_camera.get_node("UI")
+	_frisbee_anim = ui.get_node("FrisbeeAnim")
+	_crosshair_anim = ui.get_node("CrosshairAnim")
+	_right_arrow = ui.get_node("Right")
+	_left_arrow = ui.get_node("Left")
+	_down_arrow = ui.get_node("Down")
+	_up_arrow = ui.get_node("Up")
 
 
 func _process(delta):
@@ -112,6 +125,10 @@ func _physics_process(delta):
 
 
 func get_input():
+	analog_rotation = Vector2(
+			Input.get_axis("pix_look_left", "pix_look_right"),
+			Input.get_axis("pix_look_down", "pix_look_up"))
+	
 	_move_dir = Vector3.ZERO
 	
 	_move_dir.x = Input.get_axis("pix_left", "pix_right")
@@ -161,7 +178,6 @@ func hold_frisbee():
 
 
 func shoot_direction():
-	
 	if (_angle_movement.length() >= ignore_distance): # ignore short swings
 		if _shoot_angle >= 60 and _shoot_angle <= 120: # issue with 0
 			_aim_dir_general = DOWN
@@ -171,6 +187,9 @@ func shoot_direction():
 			_aim_dir_general = LEFT
 		else: # should be 60 > angle > 300, right 120 degrees
 			_aim_dir_general = RIGHT
+		
+		ui_anim()
+		_last_dir = _aim_dir_general
 
 
 func shoot_frisbee():
@@ -209,6 +228,8 @@ func shoot_frisbee():
 		new_frisbee.active = true
 		
 		_aim_dir_general = NONE
+		
+		_frisbee_anim.play("out")
 
 
 func jumping(delta):
@@ -276,11 +297,29 @@ func model_controls(delta):
 		_model_holder.rotation.y = lerp_angle(_model_holder.rotation.y, _spring_arm.rotation.y, aim_acceleration)
 
 
-func ui_anim(direction):
-	if direction == _last_dir:
+func ui_anim():
+	if _aim_dir_general == NONE:
 		return
 	
+	_right_arrow.visible = false
+	_left_arrow.visible = false
+	_up_arrow.visible = false
+	_down_arrow.visible = false
 	
+	match _aim_dir_general:
+		DOWN:
+			_up_arrow.visible = true
+		UP:
+			_down_arrow.visible = true
+		RIGHT:
+			_right_arrow.visible = true
+		LEFT:
+			_left_arrow.visible = true
+	
+	if _aim_dir_general == _last_dir:
+		return
+	
+	_frisbee_anim.play("in")
 
 
 func _input(event):

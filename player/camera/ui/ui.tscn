@@ -336,7 +336,7 @@ tracks/1/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(2, 2)]
+"values": [Vector2(1, 1)]
 }
 
 [sub_resource type="Animation" id="8"]
@@ -374,7 +374,7 @@ _data = {
 "spin": SubResource("8")
 }
 
-[node name="CenterContainer" type="CenterContainer"]
+[node name="UI" type="CenterContainer"]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -385,36 +385,37 @@ grow_vertical = 2
 
 [node name="Crosshair" type="Sprite2D" parent="."]
 modulate = Color(1, 0, 1, 1)
-scale = Vector2(2, 2)
 texture = ExtResource("1_cswyd")
 
-[node name="Right" type="Sprite2D" parent="Crosshair"]
+[node name="Right" type="Sprite2D" parent="."]
 modulate = Color(1, 0, 1, 1)
-self_modulate = Color(1, 1, 1, 0)
+position = Vector2(40, 0)
 texture = ExtResource("2_apnb0")
 
-[node name="Left" type="Sprite2D" parent="Crosshair"]
+[node name="Left" type="Sprite2D" parent="."]
 modulate = Color(1, 0, 1, 1)
-self_modulate = Color(1, 1, 1, 0)
+position = Vector2(-40, 0)
 texture = ExtResource("3_57ajs")
 
-[node name="Up" type="Sprite2D" parent="Crosshair"]
+[node name="Up" type="Sprite2D" parent="."]
 modulate = Color(1, 0, 1, 1)
-self_modulate = Color(1, 1, 1, 0)
+position = Vector2(0, -40)
 texture = ExtResource("4_pifrl")
 
-[node name="Down" type="Sprite2D" parent="Crosshair"]
+[node name="Down" type="Sprite2D" parent="."]
 modulate = Color(1, 0, 1, 1)
-self_modulate = Color(1, 1, 1, 0)
+position = Vector2(0, 40)
 texture = ExtResource("5_i6mwb")
 
-[node name="FrisbeeAnim" type="AnimationPlayer" parent="Crosshair"]
+[node name="FrisbeeAnim" type="AnimationPlayer" parent="."]
+root_node = NodePath("../Crosshair")
 autoplay = "RESET"
 libraries = {
 "": SubResource("AnimationLibrary_f0150")
 }
 
-[node name="CrosshairAnim" type="AnimationPlayer" parent="Crosshair"]
+[node name="CrosshairAnim" type="AnimationPlayer" parent="."]
+root_node = NodePath("../Crosshair")
 libraries = {
 "": SubResource("AnimationLibrary_vcr7d")
 }

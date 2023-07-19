@@ -1,8 +1,7 @@
-[gd_scene load_steps=8 format=3 uid="uid://b6x6xfqsnexa4"]
+[gd_scene load_steps=7 format=3 uid="uid://b6x6xfqsnexa4"]
 
-[ext_resource type="Script" path="res://player/pix/player.gd" id="1_gtfes"]
+[ext_resource type="Script" path="res://player/bit/bit.gd" id="1_muaqt"]
 [ext_resource type="Script" path="res://player/camera/spring_arm.gd" id="2_80x0t"]
-[ext_resource type="PackedScene" uid="uid://ci2iyjdfwcvsr" path="res://player/camera/ui/ui.tscn" id="3_ehl54"]
 [ext_resource type="PackedScene" uid="uid://dk8ls2ted1g30" path="res://player/pix/model/pix_model.tscn" id="4_oyx1d"]
 [ext_resource type="PackedScene" path="res://player/pix/ring.tscn" id="5_vfj7s"]
 
@@ -18,7 +17,7 @@ radius = 0.15
 collision_layer = 2
 collision_mask = 33
 slide_on_ceiling = false
-script = ExtResource("1_gtfes")
+script = ExtResource("1_muaqt")
 
 [node name="Collider" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
@@ -33,25 +32,20 @@ script = ExtResource("2_80x0t")
 
 [node name="CameraHolder" type="Node3D" parent="SpringArm3D"]
 
-[node name="Camera3D" type="Camera3D" parent="SpringArm3D/CameraHolder"]
+[node name="CameraPlaceholder" type="Node3D" parent="SpringArm3D/CameraHolder"]
 top_level = true
-current = true
-near = 0.01
-far = 1000.0
 
-[node name="CenterContainer" parent="SpringArm3D/CameraHolder/Camera3D" instance=ExtResource("3_ehl54")]
-
-[node name="RayCast3D" type="RayCast3D" parent="SpringArm3D/CameraHolder/Camera3D"]
+[node name="RayCast3D" type="RayCast3D" parent="SpringArm3D/CameraHolder/CameraPlaceholder"]
 visible = false
 target_position = Vector3(0, 0, -10)
 collision_mask = 9
 collide_with_areas = true
 debug_shape_thickness = 5
 
-[node name="Start" type="Marker3D" parent="SpringArm3D/CameraHolder/Camera3D/RayCast3D"]
+[node name="Start" type="Marker3D" parent="SpringArm3D/CameraHolder/CameraPlaceholder/RayCast3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2)
 
-[node name="End" type="Marker3D" parent="SpringArm3D/CameraHolder/Camera3D/RayCast3D"]
+[node name="End" type="Marker3D" parent="SpringArm3D/CameraHolder/CameraPlaceholder/RayCast3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -10)
 
 [node name="Damage" type="Area3D" parent="."]

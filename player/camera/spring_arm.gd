@@ -1,6 +1,7 @@
 extends SpringArm3D
 
 var mouse_sensitivity := 0.15
+var analog_sensitivity := 0.75
 var zoom_sensitivity := 1
 var camera_acceleration := 1
 var aim_speed := 0.1
@@ -11,10 +12,12 @@ var max_zoom := 5
 var max_offset := 3
 var min_offset := 1
 
+var aim_delta := Vector2()
+
 var _current_aim_zoom := 0.0
 
 @onready var _player : CharacterBody3D = $".."
-@onready var _camera : Camera3D = $CameraHolder/Camera3D
+@onready var _camera : Node3D = $CameraHolder/CameraPlaceholder
 @onready var _camera_holder : Node3D = $CameraHolder
 
 var aim_zoom := _current_aim_zoom
@@ -31,14 +34,7 @@ func _input(event):
 
 
 func _process(delta):
-	if Input.is_action_just_pressed("mouse_escape"):
-		if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-		elif Input.mouse_mode == Input.MOUSE_MODE_VISIBLE:
-			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-	
-	if Input.is_action_just_pressed("fullscreen"):
-		get_window().mode = Window.MODE_EXCLUSIVE_FULLSCREEN if (!((get_window().mode == Window.MODE_EXCLUSIVE_FULLSCREEN) or (get_window().mode == Window.MODE_FULLSCREEN))) else Window.MODE_WINDOWED
+	rotate_camera()
 	
 	_current_aim_zoom = lerp(_current_aim_zoom, aim_zoom, aim_speed)
 	
@@ -58,5 +54,10 @@ func _process(delta):
 
 
 func rotate_camera():
+	aim_delta.y = -_player.analog_rotation.x * analog_sensitivity
+	aim_delta.x = _player.analog_rotation.y * analog_sensitivity
+	rotation_degrees.y -= _player.analog_rotation.x * analog_sensitivity
+	rotation_degrees.x += _player.analog_rotation.y * analog_sensitivity
+	
 	rotation_degrees.x = clamp(rotation_degrees.x, -89.0, 89.0)
 	rotation_degrees.y = wrapf(rotation_degrees.y, 0.0, 360.0)

@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://bg476b6funlka"]
+[gd_scene load_steps=11 format=3 uid="uid://bg476b6funlka"]
 
 [ext_resource type="Environment" uid="uid://d17vn2ygj254p" path="res://world_env.tres" id="1_gq6md"]
 [ext_resource type="PackedScene" uid="uid://ojph8q8s2i7y" path="res://enemy/enemy.tscn" id="2"]
@@ -7,6 +7,8 @@
 [ext_resource type="PackedScene" uid="uid://ds0sb1s52i5r3" path="res://player/pix/pix.tscn" id="5_hfq8l"]
 [ext_resource type="Texture2D" uid="uid://1vis126su0ah" path="res://scenes/test/texture_01.png" id="6"]
 [ext_resource type="PackedScene" uid="uid://b6x6xfqsnexa4" path="res://player/bit/bit.tscn" id="7_xk45x"]
+[ext_resource type="Script" path="res://scenes/test/camera_follow.gd" id="8_gldpp"]
+[ext_resource type="PackedScene" uid="uid://ci2iyjdfwcvsr" path="res://player/camera/ui/ui.tscn" id="9_4po60"]
 
 [sub_resource type="StandardMaterial3D" id="1"]
 transparency = 1
@@ -105,3 +107,56 @@ size = Vector3(1, 16, 8)
 
 [node name="Bit" parent="." instance=ExtResource("7_xk45x")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.71381, 0, 0)
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LeftContainer" type="SubViewportContainer" parent="Control"]
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 200.0
+grow_vertical = 2
+size_flags_horizontal = 3
+
+[node name="SubViewport" type="SubViewport" parent="Control/LeftContainer"]
+handle_input_locally = false
+size = Vector2i(320, 360)
+render_target_update_mode = 4
+
+[node name="Camera3D" type="Camera3D" parent="Control/LeftContainer/SubViewport"]
+current = true
+near = 0.01
+far = 1000.0
+script = ExtResource("8_gldpp")
+
+[node name="UI" parent="Control/LeftContainer/SubViewport/Camera3D" instance=ExtResource("9_4po60")]
+
+[node name="RightContainer" type="SubViewportContainer" parent="Control"]
+layout_mode = 1
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 0
+grow_vertical = 2
+size_flags_horizontal = 3
+
+[node name="SubViewport" type="SubViewport" parent="Control/RightContainer"]
+handle_input_locally = false
+size = Vector2i(320, 360)
+render_target_update_mode = 4
+
+[node name="Camera3D" type="Camera3D" parent="Control/RightContainer/SubViewport"]
+current = true
+near = 0.01
+far = 1000.0
+script = ExtResource("8_gldpp")
+player = 1
+
+[node name="UI" parent="Control/RightContainer/SubViewport/Camera3D" instance=ExtResource("9_4po60")]
