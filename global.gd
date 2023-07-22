@@ -14,5 +14,8 @@ func _process(delta):
 		elif Input.mouse_mode == Input.MOUSE_MODE_VISIBLE:
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	
+	if Input.is_action_just_pressed("pix_menu"):
+		get_tree().quit() # temporary for testing
+	
 	if Input.is_action_just_pressed("fullscreen"):
 		get_window().mode = Window.MODE_FULLSCREEN if (!(get_window().mode == Window.MODE_FULLSCREEN)) else Window.MODE_WINDOWED

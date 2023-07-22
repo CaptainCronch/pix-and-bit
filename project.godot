@@ -18,6 +18,7 @@ config/icon="res://icon.png"
 [autoload]
 
 Global="*res://global.gd"
+MusicManager="*res://music_manager.gd"
 
 [discord_presence]
 

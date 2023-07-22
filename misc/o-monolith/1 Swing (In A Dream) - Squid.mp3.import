@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://k8avwcevbhay"
+path="res://.godot/imported/1 Swing (In A Dream) - Squid.mp3-00fb3a6a7f40a2bf5d3df46b2ba99106.mp3str"
+
+[deps]
+
+source_file="res://misc/o-monolith/1 Swing (In A Dream) - Squid.mp3"
+dest_files=["res://.godot/imported/1 Swing (In A Dream) - Squid.mp3-00fb3a6a7f40a2bf5d3df46b2ba99106.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

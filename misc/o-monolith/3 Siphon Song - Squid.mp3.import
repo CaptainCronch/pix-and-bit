@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://cxxne6umwkhb3"
+path="res://.godot/imported/3 Siphon Song - Squid.mp3-61a5cb31cf756c8e4e2c6a6fb87b9ff1.mp3str"
+
+[deps]
+
+source_file="res://misc/o-monolith/3 Siphon Song - Squid.mp3"
+dest_files=["res://.godot/imported/3 Siphon Song - Squid.mp3-61a5cb31cf756c8e4e2c6a6fb87b9ff1.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

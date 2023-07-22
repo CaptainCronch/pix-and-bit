@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://duas510daxlrv"
+path="res://.godot/imported/4 Undergrowth - Squid.mp3-ea3b860fdb49abf45ee9592f4b25c2af.mp3str"
+
+[deps]
+
+source_file="res://misc/o-monolith/4 Undergrowth - Squid.mp3"
+dest_files=["res://.godot/imported/4 Undergrowth - Squid.mp3-ea3b860fdb49abf45ee9592f4b25c2af.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

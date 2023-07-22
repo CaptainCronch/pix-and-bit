@@ -40,20 +40,22 @@ func _ready():
 			rotation_degrees.z = 0
 			gravity_scale = 0.3
 		throw.TOMAHAWK:
+			speed = tomahawk_speed
 			rotation_degrees.z = 90
 			gravity_scale = 4
 			physics_material_override.bounce = 1.0
 			physics_material_override.friction = 0.5
 		throw.ROLL:
+			speed = roll_speed
 			rotation_degrees.z = -90
 			gravity_scale = 1.5
 			physics_material_override.bounce = 0.0
 		throw.RIGHT:
+			speed = angled_speed
 			rotation_degrees.z = -45
 		throw.LEFT:
+			speed = angled_speed
 			rotation_degrees.z = 45
-		_:
-			pass
 	
 	# disable buffer
 	await get_tree().create_timer(0.2).timeout

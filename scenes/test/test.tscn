@@ -1,7 +1,6 @@
-[gd_scene load_steps=11 format=3 uid="uid://bg476b6funlka"]
+[gd_scene load_steps=10 format=3 uid="uid://bg476b6funlka"]
 
 [ext_resource type="Environment" uid="uid://d17vn2ygj254p" path="res://world_env.tres" id="1_gq6md"]
-[ext_resource type="PackedScene" uid="uid://ojph8q8s2i7y" path="res://enemy/enemy.tscn" id="2"]
 [ext_resource type="PackedScene" uid="uid://bsj7auu8gm34l" path="res://scenes/test/target.tscn" id="4"]
 [ext_resource type="Material" path="res://scenes/test/test_black.tres" id="5"]
 [ext_resource type="PackedScene" uid="uid://ds0sb1s52i5r3" path="res://player/pix/pix.tscn" id="5_hfq8l"]
@@ -27,9 +26,6 @@ transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 10,
 light_energy = 2.5
 shadow_enabled = true
 shadow_normal_bias = 0.0
-
-[node name="Enemy" parent="." instance=ExtResource("2")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0, 6)
 
 [node name="Level" type="Node3D" parent="."]
 

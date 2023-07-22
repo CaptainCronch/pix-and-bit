@@ -1,8 +1,7 @@
-[gd_scene load_steps=8 format=3 uid="uid://ds0sb1s52i5r3"]
+[gd_scene load_steps=7 format=3 uid="uid://ds0sb1s52i5r3"]
 
 [ext_resource type="Script" path="res://player/pix/pix.gd" id="1_uvvl2"]
 [ext_resource type="Script" path="res://player/camera/spring_arm.gd" id="2_3hcfs"]
-[ext_resource type="PackedScene" uid="uid://ci2iyjdfwcvsr" path="res://player/camera/ui/ui.tscn" id="3_ab06t"]
 [ext_resource type="PackedScene" uid="uid://dk8ls2ted1g30" path="res://player/pix/model/pix_model.tscn" id="8_yeown"]
 [ext_resource type="PackedScene" path="res://player/pix/ring.tscn" id="9_fjlku"]
 
@@ -48,13 +47,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2)
 
 [node name="End" type="Marker3D" parent="SpringArm3D/CameraHolder/CameraPlaceholder/RayCast3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -10)
-
-[node name="Camera3D" type="Camera3D" parent="SpringArm3D/CameraHolder"]
-top_level = true
-near = 0.01
-far = 1000.0
-
-[node name="CenterContainer" parent="SpringArm3D/CameraHolder/Camera3D" instance=ExtResource("3_ab06t")]
 
 [node name="Damage" type="Area3D" parent="."]
 collision_layer = 2

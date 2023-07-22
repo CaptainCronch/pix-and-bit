@@ -1,5 +1,8 @@
-# Personal addons
+# Personal
 addons/ridiculous_coding/
+
+# uncomment if facing prison time
+#misc/o-monolith/
 
 .godot/
 

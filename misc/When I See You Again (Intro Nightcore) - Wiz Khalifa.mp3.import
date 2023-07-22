@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://d3ct76cllr2f7"
+path="res://.godot/imported/When I See You Again (Intro Nightcore) - Wiz Khalifa.mp3-30e72b02243059cbc12f901221b8ee3e.mp3str"
+
+[deps]
+
+source_file="res://misc/When I See You Again (Intro Nightcore) - Wiz Khalifa.mp3"
+dest_files=["res://.godot/imported/When I See You Again (Intro Nightcore) - Wiz Khalifa.mp3-30e72b02243059cbc12f901221b8ee3e.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

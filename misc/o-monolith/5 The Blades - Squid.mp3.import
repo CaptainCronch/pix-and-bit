@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://b1uo2wnpqa7yi"
+path="res://.godot/imported/5 The Blades - Squid.mp3-2e1ee34e33dd90d2d36ac9e799b31f6f.mp3str"
+
+[deps]
+
+source_file="res://misc/o-monolith/5 The Blades - Squid.mp3"
+dest_files=["res://.godot/imported/5 The Blades - Squid.mp3-2e1ee34e33dd90d2d36ac9e799b31f6f.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
