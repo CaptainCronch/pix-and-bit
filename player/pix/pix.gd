@@ -8,9 +8,20 @@ var frisbee := preload("res://player/weapons/frisbee/frisbee.tscn")
 
 func _ready():
 	super()
-	player_id = ID.PLAYER_1
+	player_id = ID.PLAYER_2
 	Global.pix = self
-	_controls = pix_controls
+	_controls = bit_controls
+	call_deferred("init")
+
+
+func init():
+	var ui = Global.p1_camera.get_node("UI")
+	_swing_anim = ui.get_node("SwingAnim")
+	_crosshair_anim = ui.get_node("CrosshairAnim")
+	_right_arrow = ui.get_node("Right")
+	_left_arrow = ui.get_node("Left")
+	_down_arrow = ui.get_node("Down")
+	_up_arrow = ui.get_node("Up")
 
 
 func _process(delta):

@@ -1,7 +1,8 @@
-[gd_scene load_steps=10 format=3 uid="uid://bg476b6funlka"]
+[gd_scene load_steps=11 format=3 uid="uid://bg476b6funlka"]
 
-[ext_resource type="Environment" uid="uid://d17vn2ygj254p" path="res://world_env.tres" id="1_gq6md"]
+[ext_resource type="Environment" uid="uid://deu0pjqwqkt2p" path="res://world_env_cheap.tres" id="1_bihul"]
 [ext_resource type="PackedScene" uid="uid://bsj7auu8gm34l" path="res://scenes/test/target.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://dasmgbuwa8nfn" path="res://scenes/test/targets/target_tall.tscn" id="4_ed2e5"]
 [ext_resource type="Material" path="res://scenes/test/test_black.tres" id="5"]
 [ext_resource type="PackedScene" uid="uid://ds0sb1s52i5r3" path="res://player/pix/pix.tscn" id="5_hfq8l"]
 [ext_resource type="Texture2D" uid="uid://1vis126su0ah" path="res://scenes/test/texture_01.png" id="6"]
@@ -19,7 +20,7 @@ uv1_triplanar = true
 [node name="Test" type="Node3D"]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = ExtResource("1_gq6md")
+environment = ExtResource("1_bihul")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 10, 0)
@@ -90,6 +91,9 @@ transform = Transform3D(-4.37114e-08, 1, -4.37114e-08, 0, -4.37114e-08, -1, -1, 
 [node name="Target2" parent="Level/Targets" instance=ExtResource("4")]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, -6, -10)
 
+[node name="target_tall" parent="Level/Targets" instance=ExtResource("4_ed2e5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0)
+
 [node name="Obstacles" type="CSGCombiner3D" parent="Level"]
 material_override = SubResource("1")
 use_collision = true
@@ -122,7 +126,7 @@ size_flags_horizontal = 3
 
 [node name="SubViewport" type="SubViewport" parent="Control/LeftContainer"]
 handle_input_locally = false
-size = Vector2i(320, 360)
+size = Vector2i(960, 1080)
 render_target_update_mode = 4
 
 [node name="Camera3D" type="Camera3D" parent="Control/LeftContainer/SubViewport"]
@@ -130,6 +134,7 @@ current = true
 near = 0.01
 far = 1000.0
 script = ExtResource("8_gldpp")
+player = 1
 
 [node name="UI" parent="Control/LeftContainer/SubViewport/Camera3D" instance=ExtResource("9_4po60")]
 
@@ -145,7 +150,7 @@ size_flags_horizontal = 3
 
 [node name="SubViewport" type="SubViewport" parent="Control/RightContainer"]
 handle_input_locally = false
-size = Vector2i(320, 360)
+size = Vector2i(960, 1080)
 render_target_update_mode = 4
 
 [node name="Camera3D" type="Camera3D" parent="Control/RightContainer/SubViewport"]
@@ -153,6 +158,5 @@ current = true
 near = 0.01
 far = 1000.0
 script = ExtResource("8_gldpp")
-player = 1
 
 [node name="UI" parent="Control/RightContainer/SubViewport/Camera3D" instance=ExtResource("9_4po60")]

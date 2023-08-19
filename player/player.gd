@@ -29,9 +29,9 @@ var camera_offset := Vector3.ZERO # used in spring_arm.gd
 var aim_limit_max := Vector3(0, 0, -20)
 var aim_limit_min := Vector3(0, 0, -4)
 var analog_look := Vector2()
-var ignore_distance := 10
+var ignore_distance := 10.0
 var max_clip := 2
-var reload_time := 1
+var reload_time := 1.0
 
 
 enum Swing {
@@ -91,7 +91,7 @@ var _shoot_direction := Vector3.ZERO
 var _swing_movement := Vector2.ZERO
 var clip_left := max_clip
 
-var _swing_angle := 0
+var _swing_angle := 0.0
 var _swing_dir := Swing.NONE
 
 @onready var camera_placeholder : Node3D = $SpringArm3D/CameraHolder/CameraPlaceholder # used by Global
@@ -120,17 +120,6 @@ func _ready():
 	_shoot_ray.target_position = aim_limit_max
 	_end.position = aim_limit_max
 	_start.position = aim_limit_min
-	call_deferred("init")
-
-
-func init():
-	var ui = Global.pix_camera.get_node("UI")
-	_swing_anim = ui.get_node("SwingAnim")
-	_crosshair_anim = ui.get_node("CrosshairAnim")
-	_right_arrow = ui.get_node("Right")
-	_left_arrow = ui.get_node("Left")
-	_down_arrow = ui.get_node("Down")
-	_up_arrow = ui.get_node("Up")
 
 
 func _process(delta):

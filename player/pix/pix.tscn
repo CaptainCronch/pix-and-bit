@@ -1,9 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://ds0sb1s52i5r3"]
+[gd_scene load_steps=6 format=3 uid="uid://ds0sb1s52i5r3"]
 
 [ext_resource type="Script" path="res://player/pix/pix.gd" id="1_uvvl2"]
 [ext_resource type="Script" path="res://player/camera/spring_arm.gd" id="2_3hcfs"]
 [ext_resource type="PackedScene" uid="uid://dk8ls2ted1g30" path="res://player/pix/model/pix_model.tscn" id="8_yeown"]
-[ext_resource type="PackedScene" path="res://player/pix/ring.tscn" id="9_fjlku"]
 
 [sub_resource type="CylinderShape3D" id="3"]
 height = 1.15
@@ -13,7 +12,7 @@ radius = 0.3
 height = 0.75
 radius = 0.15
 
-[node name="Pix" type="CharacterBody3D"]
+[node name="Pix" type="CharacterBody3D" groups=["Player"]]
 collision_layer = 2
 collision_mask = 33
 slide_on_ceiling = false
@@ -74,14 +73,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 0, 0)
 
 [node name="Hand" type="Node3D" parent="ModelHolder/Model/Body"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, 0)
-
-[node name="RightRing" parent="ModelHolder" instance=ExtResource("9_fjlku")]
-transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, 0.3, 0.75, 0)
-visible = false
-
-[node name="LeftRing" parent="ModelHolder" instance=ExtResource("9_fjlku")]
-transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, -0.3, 0.75, 0)
-visible = false
 
 [node name="JumpBuffer" type="Timer" parent="."]
 wait_time = 0.5

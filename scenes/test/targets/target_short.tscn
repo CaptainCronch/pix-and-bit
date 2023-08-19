@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://dr05u3mrrfp03"]
+
+[ext_resource type="PackedScene" uid="uid://dvxi66ma6rkgm" path="res://scenes/test/targets/target_short.glb" id="1_hbjik"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ejy3f"]
+albedo_color = Color(0, 1, 0.6, 1)
+
+[node name="target_short" instance=ExtResource("1_hbjik")]
+
+[node name="target" parent="." index="0"]
+transform = Transform3D(0.876285, 9.35332e-11, 0.0612758, 0.0612758, -2.67845e-09, -0.876285, 9.35332e-11, 0.878425, -2.67845e-09, 0, 2.7, 0)
+surface_material_override/0 = SubResource("StandardMaterial3D_ejy3f")

@@ -1,0 +1,94 @@
+[gd_scene load_steps=10 format=3 uid="uid://cvk3042en3bnl"]
+
+[ext_resource type="Script" path="res://player/weapons/grenade/grenade.gd" id="1_lfjbu"]
+[ext_resource type="Texture2D" uid="uid://bjura45erdxk2" path="res://icon.png" id="2_l5kpc"]
+
+[sub_resource type="PhysicsMaterial" id="6"]
+friction = 0.0
+rough = true
+bounce = 0.5
+
+[sub_resource type="SphereShape3D" id="3"]
+radius = 0.3
+
+[sub_resource type="StandardMaterial3D" id="2"]
+albedo_color = Color(1, 0.466667, 0, 1)
+albedo_texture = ExtResource("2_l5kpc")
+
+[sub_resource type="SphereShape3D" id="4"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_inwo4"]
+lifetime_randomness = 0.8
+emission_shape = 1
+emission_sphere_radius = 0.5
+direction = Vector3(0, 1, 0)
+spread = 75.0
+gravity = Vector3(0, -4, 0)
+initial_velocity_min = 5.0
+initial_velocity_max = 10.0
+damping_min = 1.0
+damping_max = 2.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_321iu"]
+albedo_color = Color(1, 0.466667, 0, 1)
+albedo_texture = ExtResource("2_l5kpc")
+
+[sub_resource type="SphereMesh" id="SphereMesh_xcde2"]
+lightmap_size_hint = Vector2i(5, 3)
+material = SubResource("StandardMaterial3D_321iu")
+flip_faces = true
+radius = 0.1
+height = 0.2
+radial_segments = 8
+rings = 6
+
+[node name="Grenade" type="RigidBody3D"]
+collision_layer = 4
+collision_mask = 37
+mass = 0.5
+physics_material_override = SubResource("6")
+gravity_scale = 0.5
+continuous_cd = true
+max_contacts_reported = 3
+contact_monitor = true
+can_sleep = false
+linear_damp = 1.0
+script = ExtResource("1_lfjbu")
+
+[node name="Collider" type="CollisionShape3D" parent="."]
+shape = SubResource("3")
+
+[node name="Model" type="CSGSphere3D" parent="."]
+radius = 0.3
+material = SubResource("2")
+
+[node name="Damage" type="Area3D" parent="."]
+collision_layer = 4
+collision_mask = 24
+
+[node name="Collider" type="CollisionShape3D" parent="Damage"]
+shape = SubResource("4")
+
+[node name="SelfDestruct" type="Timer" parent="."]
+wait_time = 3.0
+one_shot = true
+
+[node name="Explode" type="Timer" parent="."]
+wait_time = 2.0
+one_shot = true
+autostart = true
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="."]
+visible = false
+emitting = false
+lifetime = 2.0
+explosiveness = 1.0
+randomness = 0.5
+fixed_fps = 8
+process_material = SubResource("ParticleProcessMaterial_inwo4")
+draw_pass_1 = SubResource("SphereMesh_xcde2")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="area_entered" from="Damage" to="." method="_on_damage_area_entered"]
+[connection signal="timeout" from="SelfDestruct" to="." method="_on_self_destruct_timeout"]
+[connection signal="timeout" from="Explode" to="." method="_on_explode_timeout"]

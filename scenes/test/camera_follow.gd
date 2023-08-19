@@ -6,10 +6,12 @@ var _target : Node3D
 func _ready():
 	if player == 0:
 		_target = Global.pix.camera_placeholder
-		Global.pix_camera = self
+		Global.p1_camera = self
+		Global.left_view = $".."
 	else:
 		_target = Global.bit.camera_placeholder
-		Global.bit_camera = self
+		Global.p2_camera = self
+		Global.right_view = $".."
 
 
 func _process(delta):
